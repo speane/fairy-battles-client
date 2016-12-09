@@ -1,4 +1,8 @@
 package com.speanegames.fairybattles.entities;
 
-public class Hero {
+import com.speanegames.fairybattles.rendering.GameEntity;
+
+public class Hero extends GameEntity {
+
+
 }
