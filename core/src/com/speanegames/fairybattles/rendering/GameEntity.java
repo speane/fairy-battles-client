@@ -14,6 +14,7 @@ public class GameEntity implements Movable, Rotatable, Drawable {
     private float rotation;
     private float width;
     private float height;
+    private TextureRegion texture;
 
     public GameEntity() {
         position = new Vector2();
@@ -21,7 +22,11 @@ public class GameEntity implements Movable, Rotatable, Drawable {
 
     @Override
     public TextureRegion getTexture() {
-        return null;
+        return texture;
+    }
+
+    public void setTexture(TextureRegion texture) {
+        this.texture = texture;
     }
 
     @Override
@@ -48,14 +53,27 @@ public class GameEntity implements Movable, Rotatable, Drawable {
         return width;
     }
 
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
     @Override
     public float getHeight() {
         return height;
     }
 
+    public void setSize(float width, float height) {
+        this.width = width;
+        this.height = height;
+    }
+
     @Override
     public float getRotation() {
         return rotation;
+    }
+
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
     }
 
     public float getX() {
