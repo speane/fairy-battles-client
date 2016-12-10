@@ -1,16 +1,15 @@
-package com.speanegames.fairybattles.rendering;
+package com.speanegames.fairybattles.entities.moving;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.speanegames.fairybattles.entities.moving.Direction;
-import com.speanegames.fairybattles.entities.moving.Movable;
-import com.speanegames.fairybattles.entities.moving.Rotatable;
+import com.speanegames.fairybattles.rendering.Drawable;
 
 public class GameEntity implements Movable, Rotatable, Drawable {
 
     private Vector2 position;
     private Vector2 moveVector;
-    private float rotationSpeed;
+    private float moveSpeed = 3;
     private float rotation;
     private float width;
     private float height;
@@ -18,6 +17,7 @@ public class GameEntity implements Movable, Rotatable, Drawable {
 
     public GameEntity() {
         position = new Vector2();
+        moveVector = new Vector2(3, 3);
     }
 
     @Override
@@ -31,16 +31,7 @@ public class GameEntity implements Movable, Rotatable, Drawable {
 
     @Override
     public void move(Direction direction) {
-        switch (direction) {
-            case FORWARD:
-                position.add(moveVector);
-                break;
-            case BACKWARD:
-                position.sub(moveVector);
-                break;
-            default:
-                break;
-        }
+        position.add(getMoveVector(direction));
     }
 
     @Override
@@ -95,5 +86,33 @@ public class GameEntity implements Movable, Rotatable, Drawable {
     public void setPosition(float x, float y) {
         position.x = x;
         position.y = y;
+    }
+
+    private Vector2 getMoveVector(Direction direction) {
+        float deltaX = 0;
+        float deltaY = 0;
+
+        switch (direction) {
+            case FORWARD:
+                deltaX = -moveSpeed * MathUtils.sinDeg(rotation);
+                deltaY = moveSpeed * MathUtils.cosDeg(rotation);
+                break;
+            case BACKWARD:
+                deltaX = moveSpeed * MathUtils.sinDeg(rotation);
+                deltaY = -moveSpeed * MathUtils.cosDeg(rotation);
+                break;
+            case LEFT:
+                deltaX = -moveSpeed * MathUtils.cosDeg(rotation);
+                deltaY = -moveSpeed * MathUtils.sinDeg(rotation);
+                break;
+            case RIGHT:
+                deltaX = moveSpeed * MathUtils.cosDeg(rotation);
+                deltaY = moveSpeed * MathUtils.sinDeg(rotation);
+                break;
+            default:
+                break;
+        }
+
+        return new Vector2(deltaX, deltaY);
     }
 }

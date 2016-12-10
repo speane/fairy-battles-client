@@ -13,7 +13,7 @@ public class HeroFactory {
     public Hero createHero(String name, float x, float y, float rotation) {
         Hero hero = new Hero();
         hero.setPosition(100, 100);
-        hero.setSize(300, 300);
+        hero.setSize(100, 100);
         hero.setRotation(rotation);
         hero.setTexture(textureManager.getTexture("player_tank_body"));
 

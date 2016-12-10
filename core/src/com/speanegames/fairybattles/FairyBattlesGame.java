@@ -2,11 +2,10 @@ package com.speanegames.fairybattles;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.speanegames.fairybattles.config.AssetConfig;
-import com.speanegames.fairybattles.rendering.TextureManager;
-import com.speanegames.fairybattles.rendering.TextureManagerImpl;
-import com.speanegames.fairybattles.screens.BattleFieldScreen;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.speanegames.fairybattles.screens.AppLoadingScreen;
 
 public class FairyBattlesGame extends Game {
 
@@ -14,21 +13,17 @@ public class FairyBattlesGame extends Game {
 
 	@Override
 	public void create() {
-		assetManager = new AssetManager();
-		assetManager.load(AssetConfig.TEXTURE_ATLAS_PATH, TextureAtlas.class);
-
-		while (!assetManager.update()) {
-			assetManager.getProgress();
-		}
-
-		TextureAtlas atlas =
-				assetManager.get(AssetConfig.TEXTURE_ATLAS_PATH);
-		TextureManager textureManager = new TextureManagerImpl(atlas);
-
-		setScreen(new BattleFieldScreen(this, textureManager));
+        initAssetManager();
+        setScreen(new AppLoadingScreen(this));
 	}
 
 	public AssetManager getAssetManager() {
 		return assetManager;
 	}
+
+    private void initAssetManager() {
+        assetManager = new AssetManager();
+        assetManager.setLoader(TiledMap.class,
+                new TmxMapLoader(new InternalFileHandleResolver()));
+    }
 }
