@@ -9,6 +9,8 @@ public class HeroInfo {
     private Integer moveSpeed;
     private Integer width;
     private Integer height;
+    private Integer damage;
+    private Integer maxHealth;
     private BulletInfo bulletInfo;
 
     public String getName() {
@@ -57,5 +59,21 @@ public class HeroInfo {
 
     public void setBulletInfo(BulletInfo bulletInfo) {
         this.bulletInfo = bulletInfo;
+    }
+
+    public Integer getDamage() {
+        return damage;
+    }
+
+    public void setDamage(Integer damage) {
+        this.damage = damage;
+    }
+
+    public Integer getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(Integer maxHealth) {
+        this.maxHealth = maxHealth;
     }
 }

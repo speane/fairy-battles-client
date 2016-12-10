@@ -94,7 +94,7 @@ public class AppLoadingScreen extends ScreenAdapter {
 
             TextureManager textureManager = new TextureManagerImpl(atlas);
 
-            game.setScreen(new BattleFieldScreen(game, textureManager));
+            game.setScreen(new AuthorizationScreen(game, textureManager));
         } else {
             progress = game.getAssetManager().getProgress();
         }

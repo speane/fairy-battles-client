@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -16,6 +17,7 @@ import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.collision.CollisionDetector;
 import com.speanegames.fairybattles.config.AppConfig;
 import com.speanegames.fairybattles.config.AssetConfig;
+import com.speanegames.fairybattles.config.BattleFieldUIConfig;
 import com.speanegames.fairybattles.entities.bullet.Bullet;
 import com.speanegames.fairybattles.entities.fortress.Fortress;
 import com.speanegames.fairybattles.entities.fortress.FortressFactory;
@@ -35,6 +37,7 @@ public class BattleFieldScreen extends ScreenAdapter {
     private Batch batch;
     private OrthographicCamera camera;
     private FitViewport viewport;
+    private ShapeRenderer shapeRenderer;
 
     private OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
 
@@ -78,6 +81,7 @@ public class BattleFieldScreen extends ScreenAdapter {
         batch = new SpriteBatch();
 
         renderer = new RendererImpl(batch);
+        shapeRenderer = new ShapeRenderer();
 
         initEntities();
         initCamera();
@@ -89,6 +93,7 @@ public class BattleFieldScreen extends ScreenAdapter {
     public void render(float delta) {
         handleInput();
         updateBullets();
+        checkCollisions();
         updateCamera();
         draw();
     }
@@ -155,6 +160,9 @@ public class BattleFieldScreen extends ScreenAdapter {
         clearScreen();
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
+
+
+
         orthogonalTiledMapRenderer.render();
 
         batch.begin();
@@ -168,6 +176,75 @@ public class BattleFieldScreen extends ScreenAdapter {
         }
 
         batch.end();
+
+        shapeRenderer.setProjectionMatrix(camera.projection);
+        shapeRenderer.setTransformMatrix(camera.view);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        shapeRenderer.setColor(Color.GREEN);
+
+        renderFortressHealthBar(fortress);
+        renderFortressHealthBar(enemyFortress);
+
+        renderHeroHealthBar(hero);
+
+
+        shapeRenderer.end();
+    }
+
+    private void renderHeroHealthBar(Hero hero) {
+        shapeRenderer.setColor(Color.BLACK);
+
+        shapeRenderer.rect(
+                hero.getX() + hero.getWidth() / 2
+                        - BattleFieldUIConfig.HERO_HEALTH_BAR_WIDTH / 2 - 1,
+                hero.getY() + hero.getHeight()
+                        + BattleFieldUIConfig.HERO_HEALTH_BAR_VERTICAL_INDENT - 1,
+                BattleFieldUIConfig.HERO_HEALTH_BAR_WIDTH + 2,
+                BattleFieldUIConfig.HERO_HEALTH_BAR_HEIGHT + 2);
+
+
+        float ratio = ((float) hero.getCurrentHealth()
+                / hero.getMaxHealth());
+
+        shapeRenderer.setColor(getHealthColor(ratio * 100));
+
+        shapeRenderer.rect(
+                hero.getX() + hero.getWidth() / 2
+                        - BattleFieldUIConfig.HERO_HEALTH_BAR_WIDTH / 2,
+                hero.getY() + hero.getHeight()
+                        + BattleFieldUIConfig.HERO_HEALTH_BAR_VERTICAL_INDENT,
+                BattleFieldUIConfig.HERO_HEALTH_BAR_WIDTH
+                        * ((float) hero.getCurrentHealth()
+                                / hero.getMaxHealth()),
+                BattleFieldUIConfig.HERO_HEALTH_BAR_HEIGHT);
+    }
+
+    private void renderFortressHealthBar(Fortress fortress) {
+        shapeRenderer.setColor(Color.BLACK);
+
+        shapeRenderer.rect(
+                fortress.getX() + fortress.getWidth() / 2
+                        - BattleFieldUIConfig.FORTRESS_HEALTH_BAR_WIDTH / 2 - 1,
+                fortress.getY() + fortress.getHeight()
+                        + BattleFieldUIConfig.FORTRESS_HEALTH_BAR_VERTICAL_INDENT - 1,
+                BattleFieldUIConfig.FORTRESS_HEALTH_BAR_WIDTH + 2,
+                BattleFieldUIConfig.FORTRESS_HEALTH_BAR_HEIGHT + 2);
+
+
+        float healthPercent = (float) fortress.getCurrentHealth()
+                / fortress.getMaxHealth();
+
+        shapeRenderer.setColor(getHealthColor(healthPercent * 100));
+
+        shapeRenderer.rect(
+                fortress.getX() + fortress.getWidth() / 2
+                        - BattleFieldUIConfig.FORTRESS_HEALTH_BAR_WIDTH / 2,
+                fortress.getY() + fortress.getHeight()
+                        + BattleFieldUIConfig.FORTRESS_HEALTH_BAR_VERTICAL_INDENT,
+                BattleFieldUIConfig.FORTRESS_HEALTH_BAR_WIDTH * healthPercent,
+                BattleFieldUIConfig.FORTRESS_HEALTH_BAR_HEIGHT);
     }
 
     private void clearScreen() {
@@ -263,18 +340,8 @@ public class BattleFieldScreen extends ScreenAdapter {
     }
 
     private void updateBullets() {
-        Iterator<Bullet> bulletIterator = hero.getBullets().iterator();
-        while (bulletIterator.hasNext()) {
-            Bullet bullet = bulletIterator.next();
+        for (Bullet bullet : hero.getBullets()) {
             bullet.move();
-
-            if (collisionDetector.collidesWithLayer(indestructibleTiledMapLayer,
-                    bullet.getCollisionModel())) {
-
-                bulletIterator.remove();
-            } else if (bullet.isFinished()){
-                bulletIterator.remove();
-            }
         }
     }
 
@@ -282,5 +349,35 @@ public class BattleFieldScreen extends ScreenAdapter {
         networkManager = new NetworkManager();
         networkManager.start();
         networkManager.connectToRoom();
+    }
+
+    private void checkCollisions() {
+        Iterator<Bullet> bulletIterator = hero.getBullets().iterator();
+        while (bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            bullet.move();
+
+            if (bullet.isFinished()) {
+                bulletIterator.remove();
+            } else if (collisionDetector.collidesWithLayer(indestructibleTiledMapLayer,
+                    bullet.getCollisionModel())) {
+
+                bulletIterator.remove();
+            } else if (collisionDetector.isCollision(bullet, enemyFortress)) {
+                int enemyFortressNewHealth = enemyFortress.getCurrentHealth() - bullet.getHero().getDamage();
+                enemyFortress.setCurrentHealth(enemyFortressNewHealth > 0 ? enemyFortressNewHealth : 0);
+                bulletIterator.remove();
+            }
+        }
+    }
+
+    private Color getHealthColor(float healthPercents) {
+        if (healthPercents > BattleFieldUIConfig.GREEN_COLOR_HEALTH_PERCENT) {
+            return Color.GREEN;
+        } else if (healthPercents > BattleFieldUIConfig.YELLOW_COLOR_HEALTH_PERCENT) {
+            return Color.YELLOW;
+        } else {
+            return Color.RED;
+        }
     }
 }

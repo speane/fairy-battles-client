@@ -4,6 +4,7 @@ public class FortressInfo {
 
     private Integer width;
     private Integer height;
+    private Integer maxHealth;
     private String textureName;
 
     public Integer getWidth() {
@@ -28,5 +29,13 @@ public class FortressInfo {
 
     public void setTextureName(String textureName) {
         this.textureName = textureName;
+    }
+
+    public Integer getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(Integer maxHealth) {
+        this.maxHealth = maxHealth;
     }
 }

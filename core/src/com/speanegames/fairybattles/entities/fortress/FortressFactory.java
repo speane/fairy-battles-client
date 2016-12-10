@@ -24,6 +24,8 @@ public class FortressFactory {
         fortress.setPosition(x - fortressInfo.getWidth() / 2, y - fortressInfo.getHeight() / 2);
         fortress.setRotation(rotation);
 
+        fortress.setMaxHealth(fortressInfo.getMaxHealth());
+        fortress.setCurrentHealth(fortressInfo.getMaxHealth());
         fortress.setSize(fortressInfo.getWidth(), fortressInfo.getHeight());
         fortress.setTexture(
                 textureManager.getTexture(fortressInfo.getTextureName()));
@@ -39,6 +41,7 @@ public class FortressFactory {
         sunFortressInfo.setTextureName("sun_fortress");
         sunFortressInfo.setWidth(320);
         sunFortressInfo.setHeight(160);
+        sunFortressInfo.setMaxHealth(500);
 
         fortressInfoMap.put("SUN", sunFortressInfo);
 
@@ -47,6 +50,7 @@ public class FortressFactory {
         moonFortressInfo.setTextureName("moon_fortress");
         moonFortressInfo.setWidth(320);
         moonFortressInfo.setHeight(160);
+        moonFortressInfo.setMaxHealth(500);
 
         fortressInfoMap.put("MOON", moonFortressInfo);
     }

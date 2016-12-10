@@ -1,104 +1,204 @@
 
 fairy_battles_assets.png
-size: 1024,256
+size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-bottom_left_mountain
+battle_lobby_label
   rotate: false
   xy: 244, 68
+  size: 400, 200
+  orig: 400, 200
+  offset: 0, 0
+  index: -1
+battle_lobby_menu_background
+  rotate: false
+  xy: 2, 270
+  size: 1014, 713
+  orig: 1014, 713
+  offset: 0, 0
+  index: -1
+bottom_left_mountain
+  rotate: false
+  xy: 888, 204
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 bottom_mountain
   rotate: false
-  xy: 244, 2
+  xy: 888, 138
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 bottom_right_mountain
   rotate: false
-  xy: 728, 190
+  xy: 888, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 grass
   rotate: false
-  xy: 310, 68
+  xy: 888, 6
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 left_mountain
   rotate: false
-  xy: 310, 2
+  xy: 954, 204
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 moon_base
   rotate: false
-  xy: 2, 14
+  xy: 2, 28
   size: 240, 240
   orig: 240, 240
   offset: 0, 0
   index: -1
 moon_fortress
   rotate: false
-  xy: 244, 134
+  xy: 646, 148
   size: 240, 120
   orig: 240, 120
   offset: 0, 0
   index: -1
 right_mountain
   rotate: false
-  xy: 794, 190
+  xy: 954, 138
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 sun_fortress
   rotate: false
-  xy: 486, 134
+  xy: 646, 26
   size: 240, 120
   orig: 240, 120
   offset: 0, 0
   index: -1
 top_left_mountain
   rotate: false
-  xy: 376, 68
+  xy: 954, 72
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 top_mountain
   rotate: false
-  xy: 376, 2
+  xy: 954, 6
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 top_right_mountain
   rotate: false
-  xy: 860, 190
+  xy: 244, 2
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 water_hero
   rotate: false
-  xy: 442, 68
+  xy: 310, 2
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 water_hero_bullet
   rotate: false
-  xy: 728, 172
+  xy: 2, 10
   size: 16, 16
   orig: 16, 16
+  offset: 0, 0
+  index: -1
+
+fairy_battles_assets2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+find_lobby_label
+  rotate: false
+  xy: 2, 2
+  size: 400, 200
+  orig: 400, 200
+  offset: 0, 0
+  index: -1
+find_lobby_menu_background
+  rotate: false
+  xy: 2, 204
+  size: 1014, 713
+  orig: 1014, 713
+  offset: 0, 0
+  index: -1
+main_menu
+  rotate: false
+  xy: 404, 2
+  size: 400, 200
+  orig: 400, 200
+  offset: 0, 0
+  index: -1
+
+fairy_battles_assets3.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+main_menu_background
+  rotate: false
+  xy: 2, 204
+  size: 1014, 713
+  orig: 1014, 713
+  offset: 0, 0
+  index: -1
+sign_in_label
+  rotate: false
+  xy: 2, 2
+  size: 400, 200
+  orig: 400, 200
+  offset: 0, 0
+  index: -1
+
+fairy_battles_assets4.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+menu_background
+  rotate: false
+  xy: 2, 2
+  size: 1014, 713
+  orig: 1014, 713
+  offset: 0, 0
+  index: -1
+
+fairy_battles_assets5.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+menu_template_background
+  rotate: false
+  xy: 2, 2
+  size: 1014, 713
+  orig: 1014, 713
+  offset: 0, 0
+  index: -1
+
+fairy_battles_assets6.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sign_in_background
+  rotate: false
+  xy: 2, 2
+  size: 1014, 713
+  orig: 1014, 713
   offset: 0, 0
   index: -1

@@ -29,9 +29,12 @@ public class HeroFactory {
         hero.setSize(heroInfo.getWidth(), heroInfo.getHeight());
         hero.setMoveSpeed(heroInfo.getMoveSpeed());
         hero.setTexture(textureManager.getTexture(heroInfo.getTextureName()));
+        hero.setMaxHealth(heroInfo.getMaxHealth());
+        hero.setCurrentHealth(hero.getMaxHealth());
+        hero.setDamage(heroInfo.getDamage());
 
         hero.setBulletFactory(
-                new BulletFactory(heroInfo.getBulletInfo(), textureManager));
+                new BulletFactory(heroInfo.getBulletInfo(), textureManager, hero));
 
         return hero;
     }
@@ -43,6 +46,8 @@ public class HeroFactory {
         waterHeroInfo.setName("WATER");
         waterHeroInfo.setWidth(64);
         waterHeroInfo.setHeight(64);
+        waterHeroInfo.setDamage(100);
+        waterHeroInfo.setMaxHealth(200);
         waterHeroInfo.setMoveSpeed(3);
         waterHeroInfo.setTextureName("water_hero");
 

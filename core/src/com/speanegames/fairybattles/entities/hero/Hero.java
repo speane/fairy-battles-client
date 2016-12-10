@@ -11,6 +11,9 @@ import java.util.List;
 public class Hero extends GameEntity implements Shooting {
 
     private String name;
+    private int damage;
+    private int maxHealth;
+    private int currentHealth;
 
     private BulletFactory bulletFactory;
 
@@ -56,5 +59,29 @@ public class Hero extends GameEntity implements Shooting {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
+
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+
+    public void setCurrentHealth(int currentHealth) {
+        this.currentHealth = currentHealth;
     }
 }
