@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.speanegames.fairybattles.FairyBattlesGame;
@@ -82,6 +83,7 @@ public class AppLoadingScreen extends ScreenAdapter {
     private void loadResourcesAsync() {
         AssetManager assetManager = game.getAssetManager();
         assetManager.load(AssetConfig.TEXTURE_ATLAS_PATH, TextureAtlas.class);
+        assetManager.load(AssetConfig.BATTLE_FIELD_TILED_MAP_PATH, TiledMap.class);
     }
 
     private void update() {

@@ -2,13 +2,14 @@ package com.speanegames.fairybattles.entities.moving;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.speanegames.fairybattles.rendering.Drawable;
 
 public class GameEntity implements Movable, Rotatable, Drawable {
 
     private Vector2 position;
-    private Vector2 moveVector;
+
     private float moveSpeed = 3;
     private float rotation;
     private float width;
@@ -17,7 +18,6 @@ public class GameEntity implements Movable, Rotatable, Drawable {
 
     public GameEntity() {
         position = new Vector2();
-        moveVector = new Vector2(3, 3);
     }
 
     @Override
@@ -53,6 +53,10 @@ public class GameEntity implements Movable, Rotatable, Drawable {
         return height;
     }
 
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
     public void setSize(float width, float height) {
         this.width = width;
         this.height = height;
@@ -86,6 +90,18 @@ public class GameEntity implements Movable, Rotatable, Drawable {
     public void setPosition(float x, float y) {
         position.x = x;
         position.y = y;
+    }
+
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        this.moveSpeed = moveSpeed;
+    }
+
+    public Rectangle getCollisionModel() {
+        return new Rectangle(getX() , getY(), getWidth(), getHeight());
     }
 
     private Vector2 getMoveVector(Direction direction) {

@@ -43,6 +43,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+        compile 'com.google.code.gson:gson:2.6.2'
     }
 }
 
@@ -55,6 +56,12 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.kotcrab.vis:vis-ui:1.2.4"
+        compile "com.esotericsoftware:kryo:3.0.3"
+        compile ("com.esotericsoftware:kryonet:2.22.0-RC1") {
+            exclude module : 'kryo'
+        }
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.google.code.gson:gson:2.6.2"
     }
 }
 

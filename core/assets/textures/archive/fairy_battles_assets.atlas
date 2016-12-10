@@ -1,0 +1,104 @@
+
+fairy_battles_assets.png
+size: 1024,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+bottom_left_mountain
+  rotate: false
+  xy: 244, 68
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+bottom_mountain
+  rotate: false
+  xy: 244, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+bottom_right_mountain
+  rotate: false
+  xy: 728, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+grass
+  rotate: false
+  xy: 310, 68
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+left_mountain
+  rotate: false
+  xy: 310, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+moon_base
+  rotate: false
+  xy: 2, 14
+  size: 240, 240
+  orig: 240, 240
+  offset: 0, 0
+  index: -1
+moon_fortress
+  rotate: false
+  xy: 244, 134
+  size: 240, 120
+  orig: 240, 120
+  offset: 0, 0
+  index: -1
+right_mountain
+  rotate: false
+  xy: 794, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+sun_fortress
+  rotate: false
+  xy: 486, 134
+  size: 240, 120
+  orig: 240, 120
+  offset: 0, 0
+  index: -1
+top_left_mountain
+  rotate: false
+  xy: 376, 68
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+top_mountain
+  rotate: false
+  xy: 376, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+top_right_mountain
+  rotate: false
+  xy: 860, 190
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+water_hero
+  rotate: false
+  xy: 442, 68
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+water_hero_bullet
+  rotate: false
+  xy: 728, 172
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
