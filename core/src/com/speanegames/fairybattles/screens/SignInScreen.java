@@ -14,23 +14,26 @@ import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.AppConfig;
 import com.speanegames.fairybattles.config.AssetConfig;
 import com.speanegames.fairybattles.config.UIConfig;
+import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManager;
 
-public class AuthorizationScreen extends ScreenAdapter {
+public class SignInScreen extends ScreenAdapter {
 
     private FairyBattlesGame game;
     private TextureManager textureManager;
+    private NetworkManager networkManager;
 
     private Skin skin;
     private Stage stage;
 
     private TextField loginTextField;
     private TextField passwordTextField;
-    private Label titleLabel;
+    private Label statusLabel;
 
-    public AuthorizationScreen(FairyBattlesGame game, TextureManager textureManager) {
+    public SignInScreen(FairyBattlesGame game) {
         this.game = game;
-        this.textureManager = textureManager;
+        this.networkManager = game.getNetworkManager();
+        this.textureManager = game.getTextureManager();
     }
 
     @Override
@@ -61,7 +64,16 @@ public class AuthorizationScreen extends ScreenAdapter {
         stage.dispose();
     }
 
-    private void initLabel() {
+    private void initStatusLabel() {
+        statusLabel = new Label("", skin);
+        statusLabel.setPosition(
+                AppConfig.SCREEN_WIDTH / 2 - UIConfig.TEXT_FIELD_INDENT * 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 4, Align.bottomLeft);
+        statusLabel.setColor(Color.RED);
+        stage.addActor(statusLabel);
+    }
+
+    private void initTitleLabel() {
         Image labelImage = new Image(textureManager.getTexture("sign_in_label"));
         labelImage.setPosition(AppConfig.SCREEN_WIDTH / 2 - UIConfig.TITLE_LABEL_WIDTH / 2.3F,
                 AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TITLE_LABEL_HEIGHT / 3F, Align.bottomLeft);
@@ -81,20 +93,12 @@ public class AuthorizationScreen extends ScreenAdapter {
     }
 
     private void initUI() {
-        initLabel();
+        initTitleLabel();
         //initTitleLabel();
         addLoginInputField();
         addPasswordInputField();
         addAuthorizeButton();
-    }
-
-    private void initTitleLabel() {
-        titleLabel = new Label("Sign in", skin);
-        titleLabel.setFontScale(1.5f);
-        titleLabel.setColor(Color.CORAL);
-        titleLabel.setPosition(AppConfig.SCREEN_WIDTH / 2 - 10,
-                AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TEXT_FIELD_INDENT * 2, Align.center);
-        stage.addActor(titleLabel);
+        initStatusLabel();
     }
 
     private void addLoginInputField() {
@@ -129,7 +133,8 @@ public class AuthorizationScreen extends ScreenAdapter {
         authorizeButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new MainMenuScreen(game, textureManager));
+                networkManager.signInRequest(loginTextField.getText(), passwordTextField.getText());
+                // game.setScreen(new MainMenuScreen(game, textureManager));
                 /*try {
                     UserInfo userInfo = authenticationManager.authorize(loginTextField.getText(),
                             passwordTextField.getText());
@@ -153,5 +158,9 @@ public class AuthorizationScreen extends ScreenAdapter {
         });
 
         stage.addActor(authorizeButton);
+    }
+
+    public void setSignInErrorMessage(String message) {
+        statusLabel.setText(message);
     }
 }

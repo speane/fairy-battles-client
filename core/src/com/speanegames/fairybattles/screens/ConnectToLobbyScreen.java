@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -17,22 +14,25 @@ import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.AppConfig;
 import com.speanegames.fairybattles.config.AssetConfig;
 import com.speanegames.fairybattles.config.UIConfig;
+import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManager;
 
-public class FindLobbyScreen extends ScreenAdapter {
+public class ConnectToLobbyScreen extends ScreenAdapter {
 
     private FairyBattlesGame game;
     private TextureManager textureManager;
+    private NetworkManager networkManager;
 
     private Skin skin;
     private Stage stage;
 
-    private TextField loginTextField;
-    private TextField passwordTextField;
+    private TextField lobbyIdTextField;
+    private Label statusLabel;
 
-    public FindLobbyScreen(FairyBattlesGame game, TextureManager textureManager) {
+    public ConnectToLobbyScreen(FairyBattlesGame game) {
         this.game = game;
-        this.textureManager = textureManager;
+        this.textureManager = game.getTextureManager();
+        this.networkManager = game.getNetworkManager();
     }
 
     @Override
@@ -63,6 +63,15 @@ public class FindLobbyScreen extends ScreenAdapter {
         stage.dispose();
     }
 
+    private void initStatusLabel() {
+        statusLabel = new Label("", skin);
+        statusLabel.setPosition(
+                AppConfig.SCREEN_WIDTH / 2 - UIConfig.TEXT_FIELD_INDENT * 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 4, Align.bottomLeft);
+        statusLabel.setColor(Color.RED);
+        stage.addActor(statusLabel);
+    }
+
     private void initBackground() {
         Image backgroundImage = new Image(textureManager.getTexture(AssetConfig.MENU_BACKGROUND_IMAGE_NAME));
         backgroundImage.setSize(AppConfig.SCREEN_WIDTH, AppConfig.SCREEN_HEIGHT);
@@ -75,12 +84,14 @@ public class FindLobbyScreen extends ScreenAdapter {
     }
 
     private void initUI() {
-        initLabel();
+        initTitleLabel();
         initLobbyIdInputField();
-        initFindButton();
+        initConnectToLobbyButton();
+        initBackButton();
+        initStatusLabel();
     }
 
-    private void initLabel() {
+    private void initTitleLabel() {
         Image labelImage = new Image(textureManager.getTexture("find_lobby_label"));
         labelImage.setPosition(AppConfig.SCREEN_WIDTH / 2 - UIConfig.TITLE_LABEL_WIDTH / 2.3F,
                 AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TITLE_LABEL_HEIGHT / 3F, Align.bottomLeft);
@@ -89,29 +100,46 @@ public class FindLobbyScreen extends ScreenAdapter {
     }
 
     private void initLobbyIdInputField() {
-        loginTextField = new TextField("", skin);
+        lobbyIdTextField = new TextField("", skin);
 
-        loginTextField.setMessageText("Lobby id");
-        loginTextField.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
-        loginTextField.setPosition(AppConfig.SCREEN_WIDTH / 2, AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TEXT_FIELD_INDENT, Align.center);
+        lobbyIdTextField.setMessageText("Lobby id");
+        lobbyIdTextField.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        lobbyIdTextField.setPosition(AppConfig.SCREEN_WIDTH / 2, AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TEXT_FIELD_INDENT, Align.center);
 
-        stage.addActor(loginTextField);
+        stage.addActor(lobbyIdTextField);
     }
 
-    private void initFindButton() {
-        TextButton authorizeButton = new TextButton("Find", skin);
+    private void initConnectToLobbyButton() {
+        TextButton connectToLobbyButton = new TextButton("Connect", skin);
 
-        authorizeButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
-        authorizeButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+        connectToLobbyButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        connectToLobbyButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
                 AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 2, Align.center);
 
-        authorizeButton.addListener(new ActorGestureListener() {
+        connectToLobbyButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new BattleFieldScreen(game, textureManager));
+                networkManager.connectToLobbyRequest(lobbyIdTextField.getText());
             }
         });
 
-        stage.addActor(authorizeButton);
+        stage.addActor(connectToLobbyButton);
+    }
+
+    private void initBackButton() {
+        TextButton backButton = new TextButton("Back", skin);
+
+        backButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        backButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 3, Align.center);
+
+        backButton.addListener(new ActorGestureListener() {
+            @Override
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                game.showMainMenuScreen();
+            }
+        });
+
+        stage.addActor(backButton);
     }
 }

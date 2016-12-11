@@ -346,9 +346,8 @@ public class BattleFieldScreen extends ScreenAdapter {
     }
 
     private void initNetwork() {
-        networkManager = new NetworkManager();
+        networkManager = new NetworkManager(game);
         networkManager.start();
-        networkManager.connectToRoom();
     }
 
     private void checkCollisions() {

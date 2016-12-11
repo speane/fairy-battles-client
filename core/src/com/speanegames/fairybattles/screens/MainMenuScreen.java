@@ -30,9 +30,9 @@ public class MainMenuScreen extends ScreenAdapter {
     private TextField loginTextField;
     private TextField passwordTextField;
 
-    public MainMenuScreen(FairyBattlesGame game, TextureManager textureManager) {
+    public MainMenuScreen(FairyBattlesGame game) {
         this.game = game;
-        this.textureManager = textureManager;
+        this.textureManager = game.getTextureManager();
     }
 
     @Override
@@ -85,12 +85,12 @@ public class MainMenuScreen extends ScreenAdapter {
 
     private void initUI() {
         initLabel();
-        initFindLobbyButton();
+        initConnectToLobbyButton();
         initCreateLobbyButton();
     }
 
-    private void initFindLobbyButton() {
-        TextButton authorizeButton = new TextButton("Find lobby", skin);
+    private void initConnectToLobbyButton() {
+        TextButton authorizeButton = new TextButton("Connect to lobby", skin);
 
         authorizeButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
         authorizeButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
@@ -99,7 +99,7 @@ public class MainMenuScreen extends ScreenAdapter {
         authorizeButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new FindLobbyScreen(game, textureManager));
+                game.showConnectToLobbyScreen();
             }
         });
 
@@ -107,7 +107,7 @@ public class MainMenuScreen extends ScreenAdapter {
     }
 
     private void initCreateLobbyButton() {
-        TextButton authorizeButton = new TextButton("Create lobby", skin);
+        TextButton authorizeButton = new TextButton("Create new lobby", skin);
 
         authorizeButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
         authorizeButton.setPosition(AppConfig.SCREEN_WIDTH / 2,

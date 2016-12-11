@@ -19,7 +19,7 @@ import com.speanegames.fairybattles.config.AssetConfig;
 import com.speanegames.fairybattles.config.UIConfig;
 import com.speanegames.fairybattles.rendering.TextureManager;
 
-public class LobbyOwnerScreen extends ScreenAdapter {
+public class ConnectedLobbyScreen extends ScreenAdapter {
 
     private FairyBattlesGame game;
     private TextureManager textureManager;
@@ -30,9 +30,9 @@ public class LobbyOwnerScreen extends ScreenAdapter {
     private Label[] moonTeamLabels;
     private Label[] sunTeamLabels;
 
-    public LobbyOwnerScreen(FairyBattlesGame game, TextureManager textureManager) {
+    public ConnectedLobbyScreen(FairyBattlesGame game) {
         this.game = game;
-        this.textureManager = textureManager;
+        this.textureManager = game.getTextureManager();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class LobbyOwnerScreen extends ScreenAdapter {
 
     private void initUI() {
         initTitleLabel();
-        initDissolveButton();
+        initLeaveLobbyButton();
         initStartButton();
         initJoinSunTeamButton();
         initJoinMoonTeamButton();
@@ -91,21 +91,21 @@ public class LobbyOwnerScreen extends ScreenAdapter {
         stage.addActor(labelImage);
     }
 
-    private void initDissolveButton() {
-        TextButton dissolveButton = new TextButton("Dissolve lobby", skin);
+    private void initLeaveLobbyButton() {
+        TextButton leaveLobbyButton = new TextButton("Leave lobby", skin);
 
-        dissolveButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
-        dissolveButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+        leaveLobbyButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        leaveLobbyButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
                 AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 3, Align.center);
 
-        dissolveButton.addListener(new ActorGestureListener() {
+        leaveLobbyButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new BattleFieldScreen(game, textureManager));
+                game.showConnectToLobbyScreen();
             }
         });
 
-        stage.addActor(dissolveButton);
+        stage.addActor(leaveLobbyButton);
     }
 
     private void initStartButton() {

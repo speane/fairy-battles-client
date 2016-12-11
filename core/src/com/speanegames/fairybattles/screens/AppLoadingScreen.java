@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.AppConfig;
 import com.speanegames.fairybattles.config.AssetConfig;
-import com.speanegames.fairybattles.rendering.TextureManager;
+import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManagerImpl;
 
 public class AppLoadingScreen extends ScreenAdapter {
@@ -92,9 +92,12 @@ public class AppLoadingScreen extends ScreenAdapter {
             TextureAtlas atlas = game.getAssetManager().get(
                     AssetConfig.TEXTURE_ATLAS_PATH, TextureAtlas.class);
 
-            TextureManager textureManager = new TextureManagerImpl(atlas);
+            game.setTextureManager(new TextureManagerImpl(atlas));
+            NetworkManager networkManager = new NetworkManager(game);
+            networkManager.start();
+            game.setNetworkManager(networkManager);
 
-            game.setScreen(new AuthorizationScreen(game, textureManager));
+            game.showSignInScreen();
         } else {
             progress = game.getAssetManager().getProgress();
         }
