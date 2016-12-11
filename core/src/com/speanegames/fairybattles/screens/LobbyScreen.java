@@ -17,14 +17,19 @@ import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.AppConfig;
 import com.speanegames.fairybattles.config.AssetConfig;
 import com.speanegames.fairybattles.config.UIConfig;
+import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManager;
 
-public class LobbyOwnerScreen extends ScreenAdapter {
+public class LobbyScreen extends ScreenAdapter {
 
     private String lobbyId;
+    private boolean isOwner;
+    private String team;
+    private int position;
 
     private FairyBattlesGame game;
     private TextureManager textureManager;
+    private NetworkManager networkManager;
 
     private Skin skin;
     private Stage stage;
@@ -32,10 +37,12 @@ public class LobbyOwnerScreen extends ScreenAdapter {
     private Label[] moonTeamLabels;
     private Label[] sunTeamLabels;
 
-    public LobbyOwnerScreen(FairyBattlesGame game, String lobbyId) {
+    public LobbyScreen(FairyBattlesGame game, String lobbyId, boolean isOwner) {
         this.lobbyId = lobbyId;
+        this.isOwner = isOwner;
         this.game = game;
         this.textureManager = game.getTextureManager();
+        this.networkManager = game.getNetworkManager();
     }
 
     @Override
@@ -66,6 +73,16 @@ public class LobbyOwnerScreen extends ScreenAdapter {
         stage.dispose();
     }
 
+    public void joinLobby(String team, int position) {
+        this.team = team;
+        this.position = position;
+        if (team.equals("SUN")) {
+            sunTeamLabels[position].setText("PLAYER");
+        } else {
+            moonTeamLabels[position].setText("PLAYER");
+        }
+    }
+
     private void initBackground() {
         Image backgroundImage = new Image(textureManager.getTexture(AssetConfig.MENU_BACKGROUND_IMAGE_NAME));
         backgroundImage.setSize(AppConfig.SCREEN_WIDTH, AppConfig.SCREEN_HEIGHT);
@@ -79,11 +96,27 @@ public class LobbyOwnerScreen extends ScreenAdapter {
 
     private void initUI() {
         initTitleLabel();
-        initDissolveButton();
-        initStartButton();
+
+        if (isOwner) {
+            initDissolveButton();
+            initStartButton();
+        } else {
+            initLeaveLobbyButton();
+        }
+
+        initLobbyIdLabel();
         initJoinSunTeamButton();
         initJoinMoonTeamButton();
         initTeamLabels();
+    }
+
+    private void initLobbyIdLabel() {
+        Label lobbyIdLabel = new Label("Lobby ID: " + lobbyId, skin);
+        lobbyIdLabel.setPosition(
+                AppConfig.SCREEN_WIDTH / 2 - UIConfig.TEXT_FIELD_INDENT * 2,
+                AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft);
+        lobbyIdLabel.setColor(Color.RED);
+        stage.addActor(lobbyIdLabel);
     }
 
     private void initTitleLabel() {
@@ -104,7 +137,7 @@ public class LobbyOwnerScreen extends ScreenAdapter {
         dissolveButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new BattleFieldScreen(game, textureManager));
+                networkManager.dissolveLobbyRequest();
             }
         });
 
@@ -128,6 +161,23 @@ public class LobbyOwnerScreen extends ScreenAdapter {
         stage.addActor(startButton);
     }
 
+    private void initLeaveLobbyButton() {
+        TextButton leaveLobbyButton = new TextButton("Leave lobby", skin);
+
+        leaveLobbyButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        leaveLobbyButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 3, Align.center);
+
+        leaveLobbyButton.addListener(new ActorGestureListener() {
+            @Override
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                game.leaveLobbyRequest();
+            }
+        });
+
+        stage.addActor(leaveLobbyButton);
+    }
+
     private void initJoinSunTeamButton() {
         TextButton joinSunTeamButton = new TextButton("Join SUN team", skin);
 
@@ -138,7 +188,7 @@ public class LobbyOwnerScreen extends ScreenAdapter {
         joinSunTeamButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new BattleFieldScreen(game, textureManager));
+                networkManager.joinTeamRequest(lobbyId, "SUN");
             }
         });
 
@@ -155,7 +205,7 @@ public class LobbyOwnerScreen extends ScreenAdapter {
         joinSunTeamButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new BattleFieldScreen(game, textureManager));
+                networkManager.joinTeamRequest(lobbyId, "MOON");
             }
         });
 

@@ -7,10 +7,16 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.NetworkConfig;
+import com.speanegames.fairybattles.networking.transfers.lobby.JoinTeamRequest;
+import com.speanegames.fairybattles.networking.transfers.lobby.JoinTeamResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.connect.ConnectToLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.connect.ConnectToLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.create.CreateLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.create.CreateLobbyResponse;
+import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.DissolveLobbyRequest;
+import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyRequest;
+import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.LobbyDissolved;
+import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.signin.SignInRequest;
 import com.speanegames.fairybattles.networking.transfers.signin.SignInResponse;
 import com.speanegames.fairybattles.networking.transfers.signup.SignUpRequest;
@@ -45,6 +51,8 @@ public class NetworkManager {
 
     public void signInRequest(String login, String password) {
         if (!game.isWaitingResponse()) {
+            Gdx.app.log("SIGN IN REQUEST", "login: " + login + " password: " + password);
+
             SignInRequest request = new SignInRequest();
             request.login = login;
             request.password = password;
@@ -55,6 +63,8 @@ public class NetworkManager {
 
     public void connectToLobbyRequest(String lobbyId) {
         if (!game.isWaitingResponse()) {
+            Gdx.app.log("CONNECT TO LOBBY REQUEST", "lobbyID: " + lobbyId);
+
             ConnectToLobbyRequest request = new ConnectToLobbyRequest();
 
             request.lobbyId = lobbyId;
@@ -65,7 +75,45 @@ public class NetworkManager {
 
     public void createLobbyRequest() {
         if (!game.isWaitingResponse()) {
+            Gdx.app.log("CREATE LOBBY REQUEST", "");
+
             CreateLobbyRequest request = new CreateLobbyRequest();
+
+            game.setWaitingResponse(true);
+            client.sendTCP(request);
+        }
+    }
+
+    public void joinTeamRequest(String lobbyId, String team) {
+        if (!game.isWaitingResponse()) {
+            Gdx.app.log("JOIN TEAM REQUEST", "lobbyID: " + lobbyId + " team: " + team);
+
+            JoinTeamRequest request = new JoinTeamRequest();
+
+            request.lobbyId = lobbyId;
+            request.team = team;
+
+            game.setWaitingResponse(true);
+            client.sendTCP(request);
+        }
+    }
+
+    public void dissolveLobbyRequest() {
+        if (!game.isWaitingResponse()) {
+            Gdx.app.log("DISSOLVE LOBBY REQUEST", "");
+
+            DissolveLobbyRequest request = new DissolveLobbyRequest();
+
+            game.setWaitingResponse(true);
+            client.sendTCP(request);
+        }
+    }
+
+    public void leaveLobbyRequest() {
+        if (!game.isWaitingResponse()) {
+            Gdx.app.log("LEAVE LOBBY REQUEST", "");
+
+            LeaveLobbyRequest request = new LeaveLobbyRequest();
 
             game.setWaitingResponse(true);
             client.sendTCP(request);
@@ -83,6 +131,12 @@ public class NetworkManager {
         kryo.register(CreateLobbyResponse.class);
         kryo.register(ConnectToLobbyRequest.class);
         kryo.register(ConnectToLobbyResponse.class);
+        kryo.register(JoinTeamRequest.class);
+        kryo.register(JoinTeamResponse.class);
+        kryo.register(DissolveLobbyRequest.class);
+        kryo.register(LobbyDissolved.class);
+        kryo.register(LeaveLobbyRequest.class);
+        kryo.register(LeaveLobbyResponse.class);
     }
 
     private void initListener() {
@@ -98,6 +152,12 @@ public class NetworkManager {
                     handleConnectToLobbyResponse((ConnectToLobbyResponse) object);
                 } else if (object instanceof CreateLobbyResponse) {
                     handleCreateLobbyResponse((CreateLobbyResponse) object);
+                } else if (object instanceof JoinTeamResponse) {
+                    handleJoinTeamResponse((JoinTeamResponse) object);
+                } else if (object instanceof LobbyDissolved) {
+                    handleLobbyDissolved((LobbyDissolved) object);
+                } else if (object instanceof LeaveLobbyResponse) {
+                    handleLeaveLobbyResponse((LeaveLobbyResponse) object);
                 }
             }
         };
@@ -111,9 +171,14 @@ public class NetworkManager {
     }
 
     private void handleSignInResponse(SignInResponse response) {
+
         if (response.success) {
+            Gdx.app.log("SIGN IN RESPONSE", "SUCCESS");
+
             game.showMainMenuScreen();
         } else {
+            Gdx.app.log("SIGN IN RESPONSE", "ERROR message: " + response.errorMessage);
+
             game.setSignInMessage(response.errorMessage);
         }
 
@@ -122,8 +187,12 @@ public class NetworkManager {
 
     private void handleConnectToLobbyResponse(ConnectToLobbyResponse response) {
         if (response.success) {
+            Gdx.app.log("SIGN IN RESPONSE", "SUCCESS " + "lobbyID: " + response.lobbyId);
+
             game.showConnectedLobbyScreen(response.lobbyId);
         } else {
+            Gdx.app.log("SIGN IN RESPONSE", "ERROR " + "message: " + response.errorMessage);
+
             game.setConnectToLobbyMessage(response.errorMessage);
         }
 
@@ -132,11 +201,39 @@ public class NetworkManager {
 
     private void handleCreateLobbyResponse(CreateLobbyResponse response) {
         if (response.success) {
+            Gdx.app.log("CREATE LOBBY RESPONSE", "SUCCESS" + " lobbyID: " + response.lobbyId);
+
             game.showLobbyOwnerScreen(response.lobbyId);
         } else {
+            Gdx.app.log("CREATE LOBBY RESPONSE", "ERROR" + " message: " + response.errorMessage);
+
             game.setCreateLobbyMessage(response.errorMessage);
         }
 
         game.setWaitingResponse(false);
+    }
+
+    private void handleJoinTeamResponse(JoinTeamResponse response) {
+        if (response.success) {
+            Gdx.app.log("JOIN TEAM RESPONSE", "SUCCESS " + "team: " + response.team + " placeID: " + response.placeId);
+
+            game.joinTeam(response.team, response.placeId);
+        } else {
+            Gdx.app.log("JOIN TEAM RESPONSE", "ERROR " + "message: " + response.errorMessage);
+        }
+
+        game.setWaitingResponse(false);
+    }
+
+    private void handleLobbyDissolved(LobbyDissolved lobbyDissolved) {
+        Gdx.app.log("LOBBY DISSOLVED", "");
+        game.setWaitingResponse(false);
+        game.lobbyDissolved();
+    }
+
+    private void handleLeaveLobbyResponse(LeaveLobbyResponse response) {
+        Gdx.app.log("LEAVE LOBBY RESPONSE", "");
+        game.setWaitingResponse(false);
+        game.leaveLobby();
     }
 }
