@@ -21,6 +21,8 @@ import com.speanegames.fairybattles.rendering.TextureManager;
 
 public class ConnectedLobbyScreen extends ScreenAdapter {
 
+    private String lobbyId;
+
     private FairyBattlesGame game;
     private TextureManager textureManager;
 
@@ -30,7 +32,8 @@ public class ConnectedLobbyScreen extends ScreenAdapter {
     private Label[] moonTeamLabels;
     private Label[] sunTeamLabels;
 
-    public ConnectedLobbyScreen(FairyBattlesGame game) {
+    public ConnectedLobbyScreen(FairyBattlesGame game, String lobbyId) {
+        this.lobbyId = lobbyId;
         this.game = game;
         this.textureManager = game.getTextureManager();
     }

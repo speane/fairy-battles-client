@@ -19,7 +19,6 @@ import com.speanegames.fairybattles.rendering.TextureManager;
 
 public class SignInScreen extends ScreenAdapter {
 
-    private FairyBattlesGame game;
     private TextureManager textureManager;
     private NetworkManager networkManager;
 
@@ -31,9 +30,8 @@ public class SignInScreen extends ScreenAdapter {
     private Label statusLabel;
 
     public SignInScreen(FairyBattlesGame game) {
-        this.game = game;
-        this.networkManager = game.getNetworkManager();
-        this.textureManager = game.getTextureManager();
+        networkManager = game.getNetworkManager();
+        textureManager = game.getTextureManager();
     }
 
     @Override
@@ -94,7 +92,6 @@ public class SignInScreen extends ScreenAdapter {
 
     private void initUI() {
         initTitleLabel();
-        //initTitleLabel();
         addLoginInputField();
         addPasswordInputField();
         addAuthorizeButton();
@@ -134,26 +131,6 @@ public class SignInScreen extends ScreenAdapter {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
                 networkManager.signInRequest(loginTextField.getText(), passwordTextField.getText());
-                // game.setScreen(new MainMenuScreen(game, textureManager));
-                /*try {
-                    UserInfo userInfo = authenticationManager.authorize(loginTextField.getText(),
-                            passwordTextField.getText());
-                    if (userInfo != null) {
-                        game.setScreen(new StartScreen(game, userInfo));
-                        dispose();
-                    }
-                    else {
-                        statusLabel.setText(WRONG_DATA_ERROR_MESSAGE);
-                    }
-                } catch (IOException e) {
-                    statusLabel.setText(CONNECTION_ERROR_TEXT_MESSAGE);
-                } catch (WrongPasswordException e) {
-                    statusLabel.setText(WRONG_PASSWORD_ERROR_MESSAGE);
-                } catch (NoSuchUserException e) {
-                    statusLabel.setText(WRONG_USERNAME_ERROR_MESSAGE);
-                } catch (UserAuthorizedException e) {
-                    statusLabel.setText(ALREADY_AUTHORIZED_ERROR_MESSAGE);
-                }*/
             }
         });
 

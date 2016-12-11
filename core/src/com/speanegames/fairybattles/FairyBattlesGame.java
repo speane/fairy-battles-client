@@ -18,6 +18,8 @@ public class FairyBattlesGame extends Game {
 	private SignInScreen signInScreen;
 	private ConnectToLobbyScreen connectToLobbyScreen;
     private ConnectedLobbyScreen connectedLobbyScreen;
+	private LobbyOwnerScreen lobbyOwnerScreen;
+    private MainMenuScreen mainMenuScreen;
 
 	@Override
 	public void create() {
@@ -67,6 +69,10 @@ public class FairyBattlesGame extends Game {
 
 	}
 
+    public void setCreateLobbyMessage(String message) {
+        mainMenuScreen.setStatusMessage(message);
+    }
+
 	public void showConnectToLobbyScreen() {
 		ConnectToLobbyScreen connectToLobbyScreen = new ConnectToLobbyScreen(this);
 		this.connectToLobbyScreen = connectToLobbyScreen;
@@ -78,8 +84,8 @@ public class FairyBattlesGame extends Game {
 		setScreen(mainMenuScreen);
 	}
 
-	public void showConnectedLobbyScreen() {
-        ConnectedLobbyScreen connectedLobbyScreen = new ConnectedLobbyScreen(this);
+	public void showConnectedLobbyScreen(String lobbyId) {
+        ConnectedLobbyScreen connectedLobbyScreen = new ConnectedLobbyScreen(this, lobbyId);
         this.connectedLobbyScreen = connectedLobbyScreen;
         setScreen(connectedLobbyScreen);
 	}
@@ -89,4 +95,10 @@ public class FairyBattlesGame extends Game {
         this.signInScreen = signInScreen;
         setScreen(signInScreen);
     }
+
+	public void showLobbyOwnerScreen(String lobbyId) {
+		LobbyOwnerScreen lobbyOwnerScreen = new LobbyOwnerScreen(this, lobbyId);
+		this.lobbyOwnerScreen = lobbyOwnerScreen;
+		setScreen(lobbyOwnerScreen);
+	}
 }

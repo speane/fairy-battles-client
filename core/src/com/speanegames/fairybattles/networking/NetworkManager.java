@@ -63,6 +63,15 @@ public class NetworkManager {
         }
     }
 
+    public void createLobbyRequest() {
+        if (!game.isWaitingResponse()) {
+            CreateLobbyRequest request = new CreateLobbyRequest();
+
+            game.setWaitingResponse(true);
+            client.sendTCP(request);
+        }
+    }
+
     private void registerClasses() {
         Kryo kryo = client.getKryo();
 
@@ -87,6 +96,8 @@ public class NetworkManager {
                     handleSignInResponse((SignInResponse) object);
                 } else if (object instanceof ConnectToLobbyResponse) {
                     handleConnectToLobbyResponse((ConnectToLobbyResponse) object);
+                } else if (object instanceof CreateLobbyResponse) {
+                    handleCreateLobbyResponse((CreateLobbyResponse) object);
                 }
             }
         };
@@ -111,9 +122,19 @@ public class NetworkManager {
 
     private void handleConnectToLobbyResponse(ConnectToLobbyResponse response) {
         if (response.success) {
-            game.showConnectedLobbyScreen();
+            game.showConnectedLobbyScreen(response.lobbyId);
         } else {
             game.setConnectToLobbyMessage(response.errorMessage);
+        }
+
+        game.setWaitingResponse(false);
+    }
+
+    private void handleCreateLobbyResponse(CreateLobbyResponse response) {
+        if (response.success) {
+            game.showLobbyOwnerScreen(response.lobbyId);
+        } else {
+            game.setCreateLobbyMessage(response.errorMessage);
         }
 
         game.setWaitingResponse(false);
