@@ -117,4 +117,8 @@ public class FairyBattlesGame extends Game {
     public void leaveLobby() {
         showMainMenuScreen();
     }
+
+    public void playerJoinedTeam(String login, String team, int position) {
+        lobbyScreen.playerJoinedTeam(login, team, position);
+    }
 }

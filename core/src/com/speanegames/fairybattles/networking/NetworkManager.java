@@ -7,15 +7,16 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.NetworkConfig;
-import com.speanegames.fairybattles.networking.transfers.lobby.JoinTeamRequest;
-import com.speanegames.fairybattles.networking.transfers.lobby.JoinTeamResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.connect.ConnectToLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.connect.ConnectToLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.create.CreateLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.create.CreateLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.DissolveLobbyRequest;
-import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.LobbyDissolved;
+import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.JoinTeamRequest;
+import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.JoinTeamResponse;
+import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.PlayerJoinedTeam;
+import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.signin.SignInRequest;
 import com.speanegames.fairybattles.networking.transfers.signin.SignInResponse;
@@ -84,13 +85,12 @@ public class NetworkManager {
         }
     }
 
-    public void joinTeamRequest(String lobbyId, String team) {
+    public void joinTeamRequest(String team) {
         if (!game.isWaitingResponse()) {
-            Gdx.app.log("JOIN TEAM REQUEST", "lobbyID: " + lobbyId + " team: " + team);
+            Gdx.app.log("JOIN TEAM REQUEST", "team: " + team);
 
             JoinTeamRequest request = new JoinTeamRequest();
 
-            request.lobbyId = lobbyId;
             request.team = team;
 
             game.setWaitingResponse(true);
@@ -137,6 +137,7 @@ public class NetworkManager {
         kryo.register(LobbyDissolved.class);
         kryo.register(LeaveLobbyRequest.class);
         kryo.register(LeaveLobbyResponse.class);
+        kryo.register(PlayerJoinedTeam.class);
     }
 
     private void initListener() {
@@ -158,6 +159,8 @@ public class NetworkManager {
                     handleLobbyDissolved((LobbyDissolved) object);
                 } else if (object instanceof LeaveLobbyResponse) {
                     handleLeaveLobbyResponse((LeaveLobbyResponse) object);
+                } else if (object instanceof  PlayerJoinedTeam) {
+                    handlePlayerJoinedTeam((PlayerJoinedTeam) object);
                 }
             }
         };
@@ -215,9 +218,9 @@ public class NetworkManager {
 
     private void handleJoinTeamResponse(JoinTeamResponse response) {
         if (response.success) {
-            Gdx.app.log("JOIN TEAM RESPONSE", "SUCCESS " + "team: " + response.team + " placeID: " + response.placeId);
+            Gdx.app.log("JOIN TEAM RESPONSE", "SUCCESS " + "team: " + response.team + " position: " + response.position);
 
-            game.joinTeam(response.team, response.placeId);
+            game.joinTeam(response.team, response.position);
         } else {
             Gdx.app.log("JOIN TEAM RESPONSE", "ERROR " + "message: " + response.errorMessage);
         }
@@ -235,5 +238,12 @@ public class NetworkManager {
         Gdx.app.log("LEAVE LOBBY RESPONSE", "");
         game.setWaitingResponse(false);
         game.leaveLobby();
+    }
+
+    private void handlePlayerJoinedTeam(PlayerJoinedTeam playerJoinedTeam) {
+        Gdx.app.log("PLAYER JOINED TEAM", "login: " + playerJoinedTeam.login + " team: "
+                + playerJoinedTeam.team + " position: " + playerJoinedTeam.position);
+
+        game.playerJoinedTeam(playerJoinedTeam.login, playerJoinedTeam.team, playerJoinedTeam.position);
     }
 }

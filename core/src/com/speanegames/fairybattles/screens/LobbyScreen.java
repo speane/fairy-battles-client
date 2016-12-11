@@ -83,6 +83,14 @@ public class LobbyScreen extends ScreenAdapter {
         }
     }
 
+    public void playerJoinedTeam(String login, String team, int position) {
+        if (team.equals("SUN")) {
+            sunTeamLabels[position].setText(login);
+        } else {
+            moonTeamLabels[position].setText(login);
+        }
+    }
+
     private void initBackground() {
         Image backgroundImage = new Image(textureManager.getTexture(AssetConfig.MENU_BACKGROUND_IMAGE_NAME));
         backgroundImage.setSize(AppConfig.SCREEN_WIDTH, AppConfig.SCREEN_HEIGHT);
@@ -188,7 +196,7 @@ public class LobbyScreen extends ScreenAdapter {
         joinSunTeamButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                networkManager.joinTeamRequest(lobbyId, "SUN");
+                networkManager.joinTeamRequest("SUN");
             }
         });
 
@@ -205,7 +213,7 @@ public class LobbyScreen extends ScreenAdapter {
         joinSunTeamButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                networkManager.joinTeamRequest(lobbyId, "MOON");
+                networkManager.joinTeamRequest("MOON");
             }
         });
 
