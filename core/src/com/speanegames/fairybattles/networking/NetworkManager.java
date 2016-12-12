@@ -148,6 +148,16 @@ public class NetworkManager {
         client.sendUDP(request);
     }
 
+    public void shootHeroRequest(float x, float y, float rotation) {
+        HeroShootRequest request = new HeroShootRequest();
+
+        request.x = x;
+        request.y = y;
+        request.rotation = rotation;
+
+        client.sendUDP(request);
+    }
+
     private void registerClasses() {
         Kryo kryo = client.getKryo();
 

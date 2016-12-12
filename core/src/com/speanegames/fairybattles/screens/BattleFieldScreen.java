@@ -133,16 +133,24 @@ public class BattleFieldScreen extends ScreenAdapter {
 
     public void moveHero(String team, int position, float x, float y, float rotation) {
         if (team.equals("SUN")) {
-            sunHeroes[position].setPosition(x, y);
-            sunHeroes[position].setRotation(rotation);
+            if (sunHeroes[position] != null) {
+                sunHeroes[position].setPosition(x, y);
+                sunHeroes[position].setRotation(rotation);
+            }
         } else {
-            moonHeroes[position].setPosition(x, y);
-            moonHeroes[position].setRotation(rotation);
+            if (moonHeroes[position] != null) {
+                moonHeroes[position].setPosition(x, y);
+                moonHeroes[position].setRotation(rotation);
+            }
         }
     }
 
     public void shootHero(String team, int position) {
-        // TODO shoot hero
+        if (team.equals("SUN")) {
+            sunHeroes[position].shoot();
+        } else {
+            moonHeroes[position].shoot();
+        }
     }
 
     private void initCamera() {
@@ -190,12 +198,10 @@ public class BattleFieldScreen extends ScreenAdapter {
         moonHeroes = new Hero[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
         for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
             if (sunTeam[i] != null) {
-                System.out.println("SUN: " + i);
                 sunHeroes[i] = heroFactory.createHero("WATER", mapWidth / 6 * (i + 2), 300, 0);
             }
 
             if (moonTeam[i] != null) {
-                System.out.println("MOON: " + i);
                 moonHeroes[i] = heroFactory.createHero("WATER", mapWidth / 6 * (i + 2), mapHeight - 300, 180);
             }
         }
@@ -240,17 +246,21 @@ public class BattleFieldScreen extends ScreenAdapter {
 
         for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
             if (sunHeroes[i] != null) {
+                for (Bullet bullet : sunHeroes[i].getBullets()) {
+                    renderer.draw(bullet);
+                }
                 renderer.draw(sunHeroes[i]);
             }
 
             if (moonHeroes[i] != null) {
+                for (Bullet bullet : moonHeroes[i].getBullets()) {
+                    renderer.draw(bullet);
+                }
                 renderer.draw(moonHeroes[i]);
             }
         }
 
-        for (Bullet bullet : hero.getBullets()) {
-            renderer.draw(bullet);
-        }
+
 
         batch.end();
 
@@ -398,7 +408,7 @@ public class BattleFieldScreen extends ScreenAdapter {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
-                    hero.shoot();
+                    networkManager.shootHeroRequest(hero.getX(), hero.getY(), hero.getRotation());
                     return true;
                 }
 
@@ -417,8 +427,17 @@ public class BattleFieldScreen extends ScreenAdapter {
     }
 
     private void updateBullets() {
-        for (Bullet bullet : hero.getBullets()) {
-            bullet.move();
+        for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
+            if (sunHeroes[i] != null) {
+                for (Bullet bullet : sunHeroes[i].getBullets()) {
+                    bullet.move();
+                }
+            }
+            if (moonHeroes[i] != null) {
+                for (Bullet bullet : moonHeroes[i].getBullets()) {
+                    bullet.move();
+                }
+            }
         }
     }
 
