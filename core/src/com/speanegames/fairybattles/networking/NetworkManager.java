@@ -7,6 +7,10 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.NetworkConfig;
+import com.speanegames.fairybattles.networking.transfers.battle.move.HeroMoveRequest;
+import com.speanegames.fairybattles.networking.transfers.battle.move.HeroMovedEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.shoot.HeroShootEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.shoot.HeroShootRequest;
 import com.speanegames.fairybattles.networking.transfers.battle.start.BattleStartedEvent;
 import com.speanegames.fairybattles.networking.transfers.battle.start.StartBattleRequest;
 import com.speanegames.fairybattles.networking.transfers.battle.start.StartBattleResponse;
@@ -47,7 +51,8 @@ public class NetworkManager {
             client.connect(
                     NetworkConfig.WAIT_TIMEOUT,
                     NetworkConfig.SERVER_HOST,
-                    NetworkConfig.PLAY_PORT);
+                    NetworkConfig.PLAY_PORT,
+                    NetworkConfig.PLAY_PORT + 1);
         } catch (IOException e) {
             // TODO log exception
         }
@@ -129,8 +134,18 @@ public class NetworkManager {
             StartBattleRequest request = new StartBattleRequest();
 
             game.setWaitingResponse(true);
-            client.sendTCP(request);
+            client.sendUDP(request);
         }
+    }
+
+    public void moveHeroRequest(float x, float y, float rotation) {
+        HeroMoveRequest request = new HeroMoveRequest();
+
+        request.x = x;
+        request.y = y;
+        request.rotation = rotation;
+
+        client.sendUDP(request);
     }
 
     private void registerClasses() {
@@ -155,6 +170,10 @@ public class NetworkManager {
         kryo.register(StartBattleRequest.class);
         kryo.register(StartBattleResponse.class);
         kryo.register(BattleStartedEvent.class);
+        kryo.register(HeroMoveRequest.class);
+        kryo.register(HeroMovedEvent.class);
+        kryo.register(HeroShootRequest.class);
+        kryo.register(HeroShootEvent.class);
     }
 
     private void initListener() {
@@ -184,6 +203,10 @@ public class NetworkManager {
                     handleStartBattleResponse((StartBattleResponse) object);
                 } else if (object instanceof BattleStartedEvent) {
                     handleBattleStartedEvent((BattleStartedEvent) object);
+                } else if (object instanceof HeroMovedEvent) {
+                    handleHeroMovedEvent((HeroMovedEvent) object);
+                } else if (object instanceof HeroShootEvent) {
+                    handleHeroShootEvent((HeroShootEvent) object);
                 }
             }
         };
@@ -271,6 +294,7 @@ public class NetworkManager {
     }
 
     private void handlePlaceCleanedEvent(LobbySlotCleanedEvent event) {
+        Gdx.app.log("SLOT CLEANED EVENT", "team: " + event.team + " position: " + event.position);
         game.cleanLobbySlot(event.team, event.position);
     }
 
@@ -284,5 +308,13 @@ public class NetworkManager {
 
     private void handleBattleStartedEvent(BattleStartedEvent event) {
         game.startBattle(event.team, event.position);
+    }
+
+    private void handleHeroMovedEvent(HeroMovedEvent event) {
+        game.heroMoved(event.team, event.position, event.x, event.y, event.rotation);
+    }
+
+    private void handleHeroShootEvent(HeroShootEvent event) {
+        game.heroShoot(event.team, event.position, event.x, event.y, event.rotation);
     }
 }

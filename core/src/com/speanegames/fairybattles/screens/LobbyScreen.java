@@ -86,8 +86,10 @@ public class LobbyScreen extends ScreenAdapter {
         this.team = team;
         this.position = position;
         if (team.equals("SUN")) {
+            sunPlayers[position] = player;
             sunTeamLabels[position].setText(player.getLogin());
         } else {
+            moonPlayers[position] = player;
             moonTeamLabels[position].setText(player.getLogin());
         }
     }
@@ -108,7 +110,7 @@ public class LobbyScreen extends ScreenAdapter {
             sunPlayers[position] = null;
         } else {
             moonTeamLabels[position].setText("[EMPTY SLOT]");
-            sunPlayers[position] = null;
+            moonPlayers[position] = null;
         }
     }
 
@@ -266,4 +268,19 @@ public class LobbyScreen extends ScreenAdapter {
         }
     }
 
+    public Player[] getMoonPlayers() {
+        return moonPlayers;
+    }
+
+    public void setMoonPlayers(Player[] moonPlayers) {
+        this.moonPlayers = moonPlayers;
+    }
+
+    public Player[] getSunPlayers() {
+        return sunPlayers;
+    }
+
+    public void setSunPlayers(Player[] sunPlayers) {
+        this.sunPlayers = sunPlayers;
+    }
 }

@@ -20,6 +20,7 @@ public class FairyBattlesGame extends Game {
 	private ConnectToLobbyScreen connectToLobbyScreen;
 	private LobbyScreen lobbyScreen;
     private MainMenuScreen mainMenuScreen;
+    private BattleFieldScreen battleFieldScreen;
 
     private Player player;
 
@@ -146,7 +147,24 @@ public class FairyBattlesGame extends Game {
     }
 
     public void startBattle(String team, int position) {
-        BattleFieldScreen screen = new BattleFieldScreen(this, team, position);
-        setScreen(screen);
+        battleFieldScreen = new BattleFieldScreen(this, team, position);
+        setScreen(battleFieldScreen);
+    }
+
+    public Player[] getSunTeam() {
+        return lobbyScreen.getSunPlayers();
+    }
+
+    public Player[] getMoonTeam() {
+        return lobbyScreen.getMoonPlayers();
+    }
+
+    public void heroMoved(String team, int position, float x, float y, float rotation) {
+        battleFieldScreen.moveHero(team, position, x, y, rotation);
+    }
+
+    public void heroShoot(String team, int position, float x, float y, float rotation) {
+        heroMoved(team, position, x, y, rotation);
+        battleFieldScreen.shootHero(team, position);
     }
 }

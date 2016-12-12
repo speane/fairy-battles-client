@@ -39,6 +39,12 @@ public class BattleFieldScreen extends ScreenAdapter {
     private final FairyBattlesGame game;
 
     private Player player;
+    private Player[] sunTeam;
+    private Player[] moonTeam;
+
+    private Hero[] sunHeroes;
+    private Hero[] moonHeroes;
+
     private String team;
     private int position;
 
@@ -57,21 +63,31 @@ public class BattleFieldScreen extends ScreenAdapter {
     private TextureManager textureManager;
 
     private Hero hero;
-    private Fortress fortress;
+
+    private Hero[] allies;
+    private Hero[] enemies;
+
+    private Fortress allyFortress;
     private Fortress enemyFortress;
+
+    private Fortress sunFortress;
+    private Fortress moonFortress;
 
     private TiledMap battleFieldMap;
     private TiledMapTileLayer indestructibleTiledMapLayer;
 
-    private float MAP_WIDTH;
-    private float MAP_HEIGHT;
+    private float mapWidth;
+    private float mapHeight;
 
     public BattleFieldScreen(FairyBattlesGame game, String team, int position) {
+        this.sunTeam = game.getSunTeam();
+        this.moonTeam = game.getMoonTeam();
         this.team = team;
         this.position = position;
         this.game = game;
         this.player = game.getPlayer();
         this.textureManager = game.getTextureManager();
+        this.networkManager = game.getNetworkManager();
         heroFactory = new HeroFactory(textureManager);
         fortressFactory = new FortressFactory(textureManager);
         collisionDetector = new CollisionDetector();
@@ -97,7 +113,6 @@ public class BattleFieldScreen extends ScreenAdapter {
         initEntities();
         initCamera();
         initInputProcessor();
-        initNetwork();
     }
 
     @Override
@@ -107,11 +122,27 @@ public class BattleFieldScreen extends ScreenAdapter {
         checkCollisions();
         updateCamera();
         draw();
+
+        networkManager.moveHeroRequest(hero.getX(), hero.getY(), hero.getRotation());
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
+    }
+
+    public void moveHero(String team, int position, float x, float y, float rotation) {
+        if (team.equals("SUN")) {
+            sunHeroes[position].setPosition(x, y);
+            sunHeroes[position].setRotation(rotation);
+        } else {
+            moonHeroes[position].setPosition(x, y);
+            moonHeroes[position].setRotation(rotation);
+        }
+    }
+
+    public void shootHero(String team, int position) {
+        // TODO shoot hero
     }
 
     private void initCamera() {
@@ -129,8 +160,8 @@ public class BattleFieldScreen extends ScreenAdapter {
     private void updateCamera() {
         float cameraX;
         float cameraY;
-        if ((hero.getX() + AppConfig.SCREEN_WIDTH / 2) > MAP_WIDTH) {
-            cameraX = MAP_WIDTH - AppConfig.SCREEN_WIDTH / 2;
+        if ((hero.getX() + AppConfig.SCREEN_WIDTH / 2) > mapWidth) {
+            cameraX = mapWidth - AppConfig.SCREEN_WIDTH / 2;
         }
         else if ((hero.getX() - AppConfig.SCREEN_WIDTH / 2) < 0) {
             cameraX = AppConfig.SCREEN_WIDTH / 2;
@@ -139,8 +170,8 @@ public class BattleFieldScreen extends ScreenAdapter {
             cameraX = hero.getX();
         }
 
-        if ((hero.getY() + AppConfig.SCREEN_HEIGHT / 2) > MAP_HEIGHT) {
-            cameraY = MAP_HEIGHT - AppConfig.SCREEN_HEIGHT / 2;
+        if ((hero.getY() + AppConfig.SCREEN_HEIGHT / 2) > mapHeight) {
+            cameraY = mapHeight - AppConfig.SCREEN_HEIGHT / 2;
         }
         else if ((hero.getY() - AppConfig.SCREEN_HEIGHT / 2) < 0) {
             cameraY = AppConfig.SCREEN_HEIGHT / 2;
@@ -155,16 +186,41 @@ public class BattleFieldScreen extends ScreenAdapter {
     }
 
     private void initEntities() {
-        hero = heroFactory.createHero("WATER", 600, 200, 0);
-        fortress = fortressFactory.createFortress("MOON", (int) (MAP_WIDTH / 2),
-                (int) (indestructibleTiledMapLayer.getTileHeight() * 4), 180);
-        enemyFortress = fortressFactory.createFortress(
-                "SUN", (int) (MAP_WIDTH / 2),
-                (int) (MAP_HEIGHT - indestructibleTiledMapLayer.getTileHeight() * 4), 0);
+        sunHeroes = new Hero[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
+        moonHeroes = new Hero[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
+        for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
+            if (sunTeam[i] != null) {
+                System.out.println("SUN: " + i);
+                sunHeroes[i] = heroFactory.createHero("WATER", mapWidth / 6 * (i + 2), 300, 0);
+            }
 
-        renderer.subscribe(enemyFortress);
-        renderer.subscribe(fortress);
-        renderer.subscribe(hero);
+            if (moonTeam[i] != null) {
+                System.out.println("MOON: " + i);
+                moonHeroes[i] = heroFactory.createHero("WATER", mapWidth / 6 * (i + 2), mapHeight - 300, 180);
+            }
+        }
+
+        sunFortress = fortressFactory.createFortress(
+                "SUN", (int) (mapWidth / 2),
+                (int) (indestructibleTiledMapLayer.getTileHeight() * 4), 180);
+
+        moonFortress = fortressFactory.createFortress("MOON", (int) (mapWidth / 2),
+                (int) (mapHeight - indestructibleTiledMapLayer.getTileHeight() * 4), 0);
+
+
+        if (team.equals("SUN")) {
+            hero = sunHeroes[position];
+            allies = sunHeroes;
+            enemies = moonHeroes;
+            allyFortress = sunFortress;
+            enemyFortress = moonFortress;
+        } else {
+            hero = moonHeroes[position];
+            allies = moonHeroes;
+            enemies = sunHeroes;
+            allyFortress = moonFortress;
+            enemyFortress = sunFortress;
+        }
     }
 
     private void draw() {
@@ -179,8 +235,18 @@ public class BattleFieldScreen extends ScreenAdapter {
         batch.begin();
 
         renderer.draw(hero);
-        renderer.draw(fortress);
-        renderer.draw(enemyFortress);
+        renderer.draw(sunFortress);
+        renderer.draw(moonFortress);
+
+        for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
+            if (sunHeroes[i] != null) {
+                renderer.draw(sunHeroes[i]);
+            }
+
+            if (moonHeroes[i] != null) {
+                renderer.draw(moonHeroes[i]);
+            }
+        }
 
         for (Bullet bullet : hero.getBullets()) {
             renderer.draw(bullet);
@@ -195,8 +261,8 @@ public class BattleFieldScreen extends ScreenAdapter {
 
         shapeRenderer.setColor(Color.GREEN);
 
-        renderFortressHealthBar(fortress);
-        renderFortressHealthBar(enemyFortress);
+        renderFortressHealthBar(sunFortress);
+        renderFortressHealthBar(moonFortress);
 
         renderHeroHealthBar(hero);
 
@@ -318,8 +384,8 @@ public class BattleFieldScreen extends ScreenAdapter {
         if (moved) {
             if (collisionDetector.collidesWithLayer(indestructibleTiledMapLayer,
                     hero.getCollisionModel())
-                    || collisionDetector.isCollision(hero, fortress)
-                    || collisionDetector.isCollision(hero, enemyFortress)) {
+                    || collisionDetector.isCollision(hero, sunFortress)
+                    || collisionDetector.isCollision(hero, moonFortress)) {
 
                 hero.setPosition(oldX, oldY);
             }
@@ -346,19 +412,14 @@ public class BattleFieldScreen extends ScreenAdapter {
                 (TiledMapTileLayer) battleFieldMap.getLayers().get(
                         AssetConfig.BACKGROUND_MAP_LAYER_NAME);
 
-        MAP_WIDTH = tiledMapTileLayer.getWidth() * tiledMapTileLayer.getTileWidth();
-        MAP_HEIGHT = tiledMapTileLayer.getHeight() * tiledMapTileLayer.getTileHeight();
+        mapWidth = tiledMapTileLayer.getWidth() * tiledMapTileLayer.getTileWidth();
+        mapHeight = tiledMapTileLayer.getHeight() * tiledMapTileLayer.getTileHeight();
     }
 
     private void updateBullets() {
         for (Bullet bullet : hero.getBullets()) {
             bullet.move();
         }
-    }
-
-    private void initNetwork() {
-        networkManager = new NetworkManager(game);
-        networkManager.start();
     }
 
     private void checkCollisions() {
