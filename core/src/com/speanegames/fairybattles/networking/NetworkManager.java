@@ -184,6 +184,8 @@ public class NetworkManager {
     }
 
     public void killHero(String killerTeam, int killerPosition, String targetTeam, int targetPosition) {
+        Gdx.app.log("KILL HERO REQUEST", killerTeam + " " + killerPosition + targetTeam + targetPosition);
+
         KillHeroEvent event = new KillHeroEvent();
 
         event.killerTeam = killerTeam;
@@ -287,13 +289,13 @@ public class NetworkManager {
                 } else if (object instanceof HitFortressEvent) {
                     handleHitFortressEvent((HitFortressEvent) object);
                 } else if (object instanceof KillHeroEvent) {
-
+                    handleKillHeroEvent((KillHeroEvent) object);
                 } else if (object instanceof RespawnHeroEvent) {
-
+                    handleRespawnHeroEvent((RespawnHeroEvent) object);
                 } else if (object instanceof DestroyFortressEvent) {
-
+                    handleDestroyFortressEvent((DestroyFortressEvent) object);
                 } else if (object instanceof BattleFinishedEvent) {
-
+                    handleBattleFinishedEvent((BattleFinishedEvent) object);
                 }
             }
         };
@@ -412,4 +414,21 @@ public class NetworkManager {
     private void handleHitFortressEvent(HitFortressEvent event) {
         game.hitFortress(event.team, event.position);
     }
+
+    private void handleKillHeroEvent(KillHeroEvent event) {
+        game.killHero(event.killerTeam, event.killerPosition, event.targetTeam, event.targetPosition);
+    }
+
+    private void handleRespawnHeroEvent(RespawnHeroEvent event) {
+        game.respawnHero(event.team, event.position);
+    }
+
+    private void handleDestroyFortressEvent(DestroyFortressEvent event) {
+        game.destroyFortress(event.team);
+    }
+
+    private void handleBattleFinishedEvent(BattleFinishedEvent event) {
+        game.finishBattle();
+    }
+
 }

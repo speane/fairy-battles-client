@@ -15,6 +15,8 @@ public class Hero extends GameEntity implements Shooting {
     private int maxHealth;
     private int currentHealth;
 
+    private boolean killed;
+
     private float respawnTime;
     private float timeAfterDeath;
 
@@ -50,7 +52,8 @@ public class Hero extends GameEntity implements Shooting {
     }
 
     public void kill() {
-        respawnTime = 0;
+        killed = true;
+        timeAfterDeath = 0;
     }
 
     public boolean isRespawned() {
@@ -150,4 +153,11 @@ public class Hero extends GameEntity implements Shooting {
         this.reloadTime = reloadTime;
     }
 
+    public boolean isKilled() {
+        return killed;
+    }
+
+    public void setKilled(boolean killed) {
+        this.killed = killed;
+    }
 }

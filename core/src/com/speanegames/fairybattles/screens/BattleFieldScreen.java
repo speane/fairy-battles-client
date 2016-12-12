@@ -140,11 +140,20 @@ public class BattleFieldScreen extends ScreenAdapter {
             checkCollisions();
             updateCamera();
             hero.setLoadTime(hero.getLoadTime() + delta * 1000);
+            /*System.out.println("alive: " + hero.isAlive() + " killed: " + hero.isKilled() + " time after death: " + hero.getTimeAfterDeath() +
+            " respawn time: " + hero.getRespawnTime() + " health: " + hero.getCurrentHealth() + " max hp: " + hero.getMaxHealth());*/
+
             if (hero.isAlive()) {
                 networkManager.moveHeroRequest(hero.getX(), hero.getY(), hero.getRotation());
             } else {
-                hero.setTimeAfterDeath(hero.getTimeAfterDeath() + delta * 1000);
-                // TODO send respawned event
+
+                if (hero.isKilled()) {
+                    hero.setTimeAfterDeath(hero.getTimeAfterDeath() + delta * 1000);
+                    if (hero.isRespawned()) {
+                        networkManager.respawn(team, position);
+                    }
+                } else {
+                }
             }
         }
         draw();
@@ -204,6 +213,40 @@ public class BattleFieldScreen extends ScreenAdapter {
             target = sunFortress;
         }
         target.setCurrentHealth(target.getCurrentHealth() - shooter.getDamage());
+    }
+
+    public void killHero(String killerTeam, int killerPosition, String targetTeam, int targetPosition) {
+        System.out.println("KILL HERO RESPONSE: " + killerTeam + " " + killerPosition + targetTeam + targetPosition);
+
+
+        Hero killer;
+        Hero target;
+        if (killerTeam.equals("SUN")) {
+            killer = sunHeroes[killerPosition];
+            target = moonHeroes[targetPosition];
+        } else {
+            killer = moonHeroes[killerPosition];
+            target = sunHeroes[targetPosition];
+        }
+
+        target.kill();
+    }
+
+    public void respawnHero(String team, int position) {
+        Hero respawnedHero;
+        if (team.equals("SUN")) {
+            respawnedHero = sunHeroes[position];
+            respawnedHero.setPosition(mapWidth / 6 * (position + 2), 300);
+            respawnedHero.setRotation(0);
+        } else {
+            respawnedHero = moonHeroes[position];
+            respawnedHero.setPosition(mapWidth / 6 * (position + 2), mapHeight - 300);
+            respawnedHero.setRotation(180);
+        }
+
+        respawnedHero.setKilled(false);
+        respawnedHero.setTimeAfterDeath(respawnedHero.getRespawnTime());
+        respawnedHero.setCurrentHealth(respawnedHero.getMaxHealth());
     }
 
     private void initUI() {
@@ -563,7 +606,7 @@ public class BattleFieldScreen extends ScreenAdapter {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 if (button == Input.Buttons.LEFT) {
-                    if (hero.isLoaded()) {
+                    if (hero.isAlive() && !hero.isKilled() && hero.isLoaded()) {
                         networkManager.shootHeroRequest(hero.getX(), hero.getY(), hero.getRotation());
                         return true;
                     }
@@ -623,10 +666,14 @@ public class BattleFieldScreen extends ScreenAdapter {
                     } else {
                         for (int j = 0; j < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; j++) {
                             if (moonHeroes[j] != null) {
-                                if (collisionDetector.isCollision(bullet, moonHeroes[i])) {
+                                if (collisionDetector.isCollision(bullet, moonHeroes[j])) {
 
                                     if (isHost) {
                                         networkManager.hitHeroEventRequest("SUN", i, j);
+                                        boolean isAlive = (moonHeroes[j].getCurrentHealth() - sunHeroes[i].getDamage()) <= 0;
+                                        if (isAlive) {
+                                            networkManager.killHero("SUN", i, "MOON", j);
+                                        }
                                     }
 
                                     bulletIterator.remove();
@@ -665,6 +712,10 @@ public class BattleFieldScreen extends ScreenAdapter {
 
                                     if (isHost) {
                                         networkManager.hitHeroEventRequest("MOON", i, j);
+                                        boolean isAlive = (sunHeroes[j].getCurrentHealth() - moonHeroes[i].getDamage()) <= 0;
+                                        if (isAlive) {
+                                            networkManager.killHero("MOON", i, "SUN", j);
+                                        }
                                     }
 
                                     bulletIterator.remove();

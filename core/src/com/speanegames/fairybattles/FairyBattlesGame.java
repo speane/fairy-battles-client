@@ -1,6 +1,7 @@
 package com.speanegames.fairybattles;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -178,5 +179,23 @@ public class FairyBattlesGame extends Game {
 
     public void hitFortress(String shooterTeam, int shooterPosition) {
         battleFieldScreen.hitFortress(shooterTeam, shooterPosition);
+    }
+
+    public void killHero(String killerTeam, int killerPosition, String targetTeam, int targetPosition) {
+        Gdx.app.log("KILL HERO REQUEST", killerTeam + " " + killerPosition + targetTeam + targetPosition);
+
+        battleFieldScreen.killHero(killerTeam, killerPosition, targetTeam, targetPosition);
+    }
+
+    public void respawnHero(String team, int position) {
+        battleFieldScreen.respawnHero(team, position);
+    }
+
+    public void destroyFortress(String team) {
+
+    }
+
+    public void finishBattle() {
+
     }
 }
