@@ -17,6 +17,7 @@ import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.AppConfig;
 import com.speanegames.fairybattles.config.AssetConfig;
 import com.speanegames.fairybattles.config.UIConfig;
+import com.speanegames.fairybattles.entities.player.Player;
 import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManager;
 
@@ -34,15 +35,23 @@ public class LobbyScreen extends ScreenAdapter {
     private Skin skin;
     private Stage stage;
 
+    private Player player;
+
+    private Player[] moonPlayers;
+    private Player[] sunPlayers;
+
     private Label[] moonTeamLabels;
     private Label[] sunTeamLabels;
 
     public LobbyScreen(FairyBattlesGame game, String lobbyId, boolean isOwner) {
+        this.player = game.getPlayer();
         this.lobbyId = lobbyId;
         this.isOwner = isOwner;
         this.game = game;
         this.textureManager = game.getTextureManager();
         this.networkManager = game.getNetworkManager();
+        moonPlayers = new Player[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
+        sunPlayers = new Player[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
     }
 
     @Override
@@ -73,21 +82,33 @@ public class LobbyScreen extends ScreenAdapter {
         stage.dispose();
     }
 
-    public void joinLobby(String team, int position) {
+    public void joinTeam(String team, int position) {
         this.team = team;
         this.position = position;
         if (team.equals("SUN")) {
-            sunTeamLabels[position].setText("PLAYER");
+            sunTeamLabels[position].setText(player.getLogin());
         } else {
-            moonTeamLabels[position].setText("PLAYER");
+            moonTeamLabels[position].setText(player.getLogin());
         }
     }
 
-    public void playerJoinedTeam(String login, String team, int position) {
+    public void playerJoinedTeam(Player player, String team, int position) {
         if (team.equals("SUN")) {
-            sunTeamLabels[position].setText(login);
+            sunPlayers[position] = player;
+            sunTeamLabels[position].setText(player.getLogin());
         } else {
-            moonTeamLabels[position].setText(login);
+            moonPlayers[position] = player;
+            moonTeamLabels[position].setText(player.getLogin());
+        }
+    }
+
+    public void cleanLobbySlot(String team, int position) {
+        if (team.equals("SUN")) {
+            sunTeamLabels[position].setText("[EMPTY SLOT]");
+            sunPlayers[position] = null;
+        } else {
+            moonTeamLabels[position].setText("[EMPTY SLOT]");
+            sunPlayers[position] = null;
         }
     }
 
@@ -162,7 +183,9 @@ public class LobbyScreen extends ScreenAdapter {
         startButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.setScreen(new BattleFieldScreen(game, textureManager));
+                if (team != null) {
+                    networkManager.startBattleRequest();
+                }
             }
         });
 
@@ -225,7 +248,7 @@ public class LobbyScreen extends ScreenAdapter {
         sunTeamLabels = new Label[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
 
         for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
-            sunTeamLabels[i] = new Label(String.format("%d. %s", i + 1, "[EMPTY SLOT]"), skin);
+            sunTeamLabels[i] = new Label("[EMPTY SLOT]", skin);
             sunTeamLabels[i].setPosition(
                     UIConfig.TEXT_FIELD_INDENT * 2,
                     AppConfig.SCREEN_HEIGHT / 2
@@ -233,7 +256,7 @@ public class LobbyScreen extends ScreenAdapter {
                     Align.bottomLeft);
             stage.addActor(sunTeamLabels[i]);
 
-            moonTeamLabels[i] = new Label(String.format("%d. %s", i + 1, "[EMPTY SLOT]"), skin);
+            moonTeamLabels[i] = new Label("[EMPTY SLOT]", skin);
             moonTeamLabels[i].setPosition(
                     AppConfig.SCREEN_WIDTH / 2 + UIConfig.TEXT_FIELD_INDENT * 6,
                     AppConfig.SCREEN_HEIGHT / 2

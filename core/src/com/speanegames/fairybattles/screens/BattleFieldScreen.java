@@ -1,6 +1,9 @@
 package com.speanegames.fairybattles.screens;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,6 +27,7 @@ import com.speanegames.fairybattles.entities.fortress.FortressFactory;
 import com.speanegames.fairybattles.entities.hero.Hero;
 import com.speanegames.fairybattles.entities.hero.HeroFactory;
 import com.speanegames.fairybattles.entities.moving.Direction;
+import com.speanegames.fairybattles.entities.player.Player;
 import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.RendererImpl;
 import com.speanegames.fairybattles.rendering.TextureManager;
@@ -33,6 +37,10 @@ import java.util.Iterator;
 public class BattleFieldScreen extends ScreenAdapter {
 
     private final FairyBattlesGame game;
+
+    private Player player;
+    private String team;
+    private int position;
 
     private Batch batch;
     private OrthographicCamera camera;
@@ -46,6 +54,7 @@ public class BattleFieldScreen extends ScreenAdapter {
     private FortressFactory fortressFactory;
     private CollisionDetector collisionDetector;
     private NetworkManager networkManager;
+    private TextureManager textureManager;
 
     private Hero hero;
     private Fortress fortress;
@@ -57,10 +66,12 @@ public class BattleFieldScreen extends ScreenAdapter {
     private float MAP_WIDTH;
     private float MAP_HEIGHT;
 
-    public BattleFieldScreen(FairyBattlesGame game,
-                             TextureManager textureManager) {
-
+    public BattleFieldScreen(FairyBattlesGame game, String team, int position) {
+        this.team = team;
+        this.position = position;
         this.game = game;
+        this.player = game.getPlayer();
+        this.textureManager = game.getTextureManager();
         heroFactory = new HeroFactory(textureManager);
         fortressFactory = new FortressFactory(textureManager);
         collisionDetector = new CollisionDetector();

@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.speanegames.fairybattles.entities.player.Player;
 import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManager;
 import com.speanegames.fairybattles.screens.*;
@@ -17,9 +18,10 @@ public class FairyBattlesGame extends Game {
 	private boolean waitingResponse;
 	private SignInScreen signInScreen;
 	private ConnectToLobbyScreen connectToLobbyScreen;
-    private ConnectedLobbyScreen connectedLobbyScreen;
 	private LobbyScreen lobbyScreen;
     private MainMenuScreen mainMenuScreen;
+
+    private Player player;
 
 	@Override
 	public void create() {
@@ -74,20 +76,20 @@ public class FairyBattlesGame extends Game {
     }
 
 	public void showConnectToLobbyScreen() {
-		ConnectToLobbyScreen connectToLobbyScreen = new ConnectToLobbyScreen(this);
-		this.connectToLobbyScreen = connectToLobbyScreen;
-		setScreen(connectToLobbyScreen);
+        ConnectToLobbyScreen connectToLobbyScreen = new ConnectToLobbyScreen(this);
+        this.connectToLobbyScreen = connectToLobbyScreen;
+        setScreen(connectToLobbyScreen);
 	}
+
+    public void connectToLobby(String lobbyId) {
+        LobbyScreen lobbyScreen = new LobbyScreen(this, lobbyId, false);
+        this.lobbyScreen = lobbyScreen;
+        setScreen(lobbyScreen);
+    }
 
 	public void showMainMenuScreen() {
 		MainMenuScreen mainMenuScreen = new MainMenuScreen(this);
 		setScreen(mainMenuScreen);
-	}
-
-	public void showConnectedLobbyScreen(String lobbyId) {
-        LobbyScreen lobbyScreen = new LobbyScreen(this, lobbyId, false);
-        this.lobbyScreen = lobbyScreen;
-        setScreen(lobbyScreen);
 	}
 
     public void showSignInScreen() {
@@ -103,7 +105,7 @@ public class FairyBattlesGame extends Game {
 	}
 
     public void joinTeam(String team, int position) {
-        lobbyScreen.joinLobby(team, position);
+        lobbyScreen.joinTeam(team, position);
     }
 
     public void lobbyDissolved() {
@@ -119,6 +121,32 @@ public class FairyBattlesGame extends Game {
     }
 
     public void playerJoinedTeam(String login, String team, int position) {
-        lobbyScreen.playerJoinedTeam(login, team, position);
+        Player player = new Player();
+        player.setLogin(login);
+        lobbyScreen.playerJoinedTeam(player, team, position);
+    }
+
+    public void cleanLobbySlot(String team, int position) {
+        lobbyScreen.cleanLobbySlot(team, position);
+    }
+
+    public void signIn(String login) {
+        Player player = new Player();
+        player.setLogin(login);
+        this.player = player;
+        showMainMenuScreen();
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void startBattle(String team, int position) {
+        BattleFieldScreen screen = new BattleFieldScreen(this, team, position);
+        setScreen(screen);
     }
 }

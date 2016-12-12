@@ -1,6 +1,6 @@
 package com.speanegames.fairybattles.networking.transfers.lobby.jointeam;
 
-public class PlayerJoinedTeam {
+public class PlayerJoinedTeamEvent {
 
     public String login;
     public String team;

@@ -7,15 +7,19 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.NetworkConfig;
+import com.speanegames.fairybattles.networking.transfers.battle.start.BattleStartedEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.start.StartBattleRequest;
+import com.speanegames.fairybattles.networking.transfers.battle.start.StartBattleResponse;
+import com.speanegames.fairybattles.networking.transfers.lobby.cleanplace.LobbySlotCleanedEvent;
 import com.speanegames.fairybattles.networking.transfers.lobby.connect.ConnectToLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.connect.ConnectToLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.create.CreateLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.create.CreateLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.DissolveLobbyRequest;
-import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.LobbyDissolved;
+import com.speanegames.fairybattles.networking.transfers.lobby.dissolve.LobbyDissolvedEvent;
 import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.JoinTeamRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.JoinTeamResponse;
-import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.PlayerJoinedTeam;
+import com.speanegames.fairybattles.networking.transfers.lobby.jointeam.PlayerJoinedTeamEvent;
 import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyRequest;
 import com.speanegames.fairybattles.networking.transfers.lobby.leave.LeaveLobbyResponse;
 import com.speanegames.fairybattles.networking.transfers.signin.SignInRequest;
@@ -120,6 +124,15 @@ public class NetworkManager {
         }
     }
 
+    public void startBattleRequest() {
+        if (!game.isWaitingResponse()) {
+            StartBattleRequest request = new StartBattleRequest();
+
+            game.setWaitingResponse(true);
+            client.sendTCP(request);
+        }
+    }
+
     private void registerClasses() {
         Kryo kryo = client.getKryo();
 
@@ -134,10 +147,14 @@ public class NetworkManager {
         kryo.register(JoinTeamRequest.class);
         kryo.register(JoinTeamResponse.class);
         kryo.register(DissolveLobbyRequest.class);
-        kryo.register(LobbyDissolved.class);
+        kryo.register(LobbyDissolvedEvent.class);
         kryo.register(LeaveLobbyRequest.class);
         kryo.register(LeaveLobbyResponse.class);
-        kryo.register(PlayerJoinedTeam.class);
+        kryo.register(PlayerJoinedTeamEvent.class);
+        kryo.register(LobbySlotCleanedEvent.class);
+        kryo.register(StartBattleRequest.class);
+        kryo.register(StartBattleResponse.class);
+        kryo.register(BattleStartedEvent.class);
     }
 
     private void initListener() {
@@ -155,12 +172,18 @@ public class NetworkManager {
                     handleCreateLobbyResponse((CreateLobbyResponse) object);
                 } else if (object instanceof JoinTeamResponse) {
                     handleJoinTeamResponse((JoinTeamResponse) object);
-                } else if (object instanceof LobbyDissolved) {
-                    handleLobbyDissolved((LobbyDissolved) object);
+                } else if (object instanceof LobbyDissolvedEvent) {
+                    handleLobbyDissolvedEvent((LobbyDissolvedEvent) object);
                 } else if (object instanceof LeaveLobbyResponse) {
                     handleLeaveLobbyResponse((LeaveLobbyResponse) object);
-                } else if (object instanceof  PlayerJoinedTeam) {
-                    handlePlayerJoinedTeam((PlayerJoinedTeam) object);
+                } else if (object instanceof PlayerJoinedTeamEvent) {
+                    handlePlayerJoinedTeamEvent((PlayerJoinedTeamEvent) object);
+                } else if (object instanceof LobbySlotCleanedEvent) {
+                    handlePlaceCleanedEvent((LobbySlotCleanedEvent) object);
+                } else if (object instanceof StartBattleResponse) {
+                    handleStartBattleResponse((StartBattleResponse) object);
+                } else if (object instanceof BattleStartedEvent) {
+                    handleBattleStartedEvent((BattleStartedEvent) object);
                 }
             }
         };
@@ -178,7 +201,7 @@ public class NetworkManager {
         if (response.success) {
             Gdx.app.log("SIGN IN RESPONSE", "SUCCESS");
 
-            game.showMainMenuScreen();
+            game.signIn(response.login);
         } else {
             Gdx.app.log("SIGN IN RESPONSE", "ERROR message: " + response.errorMessage);
 
@@ -192,7 +215,7 @@ public class NetworkManager {
         if (response.success) {
             Gdx.app.log("SIGN IN RESPONSE", "SUCCESS " + "lobbyID: " + response.lobbyId);
 
-            game.showConnectedLobbyScreen(response.lobbyId);
+            game.connectToLobby(response.lobbyId);
         } else {
             Gdx.app.log("SIGN IN RESPONSE", "ERROR " + "message: " + response.errorMessage);
 
@@ -228,7 +251,7 @@ public class NetworkManager {
         game.setWaitingResponse(false);
     }
 
-    private void handleLobbyDissolved(LobbyDissolved lobbyDissolved) {
+    private void handleLobbyDissolvedEvent(LobbyDissolvedEvent lobbyDissolvedEvent) {
         Gdx.app.log("LOBBY DISSOLVED", "");
         game.setWaitingResponse(false);
         game.lobbyDissolved();
@@ -240,10 +263,26 @@ public class NetworkManager {
         game.leaveLobby();
     }
 
-    private void handlePlayerJoinedTeam(PlayerJoinedTeam playerJoinedTeam) {
-        Gdx.app.log("PLAYER JOINED TEAM", "login: " + playerJoinedTeam.login + " team: "
-                + playerJoinedTeam.team + " position: " + playerJoinedTeam.position);
+    private void handlePlayerJoinedTeamEvent(PlayerJoinedTeamEvent playerJoinedTeamEvent) {
+        Gdx.app.log("PLAYER JOINED TEAM", "login: " + playerJoinedTeamEvent.login + " team: "
+                + playerJoinedTeamEvent.team + " position: " + playerJoinedTeamEvent.position);
 
-        game.playerJoinedTeam(playerJoinedTeam.login, playerJoinedTeam.team, playerJoinedTeam.position);
+        game.playerJoinedTeam(playerJoinedTeamEvent.login, playerJoinedTeamEvent.team, playerJoinedTeamEvent.position);
+    }
+
+    private void handlePlaceCleanedEvent(LobbySlotCleanedEvent event) {
+        game.cleanLobbySlot(event.team, event.position);
+    }
+
+    private void handleStartBattleResponse(StartBattleResponse response) {
+        if (response.success) {
+
+        }
+
+        game.setWaitingResponse(false);
+    }
+
+    private void handleBattleStartedEvent(BattleStartedEvent event) {
+        game.startBattle(event.team, event.position);
     }
 }
