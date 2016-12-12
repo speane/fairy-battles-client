@@ -147,7 +147,7 @@ public class FairyBattlesGame extends Game {
     }
 
     public void startBattle(String team, int position) {
-        battleFieldScreen = new BattleFieldScreen(this, team, position);
+        battleFieldScreen = new BattleFieldScreen(this, team, position, isLobbyOwner());
         setScreen(battleFieldScreen);
     }
 
@@ -166,5 +166,17 @@ public class FairyBattlesGame extends Game {
     public void heroShoot(String team, int position, float x, float y, float rotation) {
         heroMoved(team, position, x, y, rotation);
         battleFieldScreen.shootHero(team, position);
+    }
+
+    public boolean isLobbyOwner() {
+        return lobbyScreen.isLobbyOwner();
+    }
+
+    public void hitHero(String shooterTeam, int shooterPosition, int targetPosition) {
+        battleFieldScreen.hitHero(shooterTeam, shooterPosition, targetPosition);
+    }
+
+    public void hitFortress(String shooterTeam, int shooterPosition) {
+        battleFieldScreen.hitFortress(shooterTeam, shooterPosition);
     }
 }

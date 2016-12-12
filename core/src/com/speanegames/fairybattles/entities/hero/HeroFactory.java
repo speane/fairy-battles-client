@@ -32,6 +32,10 @@ public class HeroFactory {
         hero.setMaxHealth(heroInfo.getMaxHealth());
         hero.setCurrentHealth(hero.getMaxHealth());
         hero.setDamage(heroInfo.getDamage());
+        hero.setReloadTime(heroInfo.getReloadTime());
+        hero.setLoadTime(heroInfo.getReloadTime());
+        hero.setRespawnTime(heroInfo.getRespawnTime());
+        hero.setTimeAfterDeath(heroInfo.getRespawnTime());
 
         hero.setBulletFactory(
                 new BulletFactory(heroInfo.getBulletInfo(), textureManager, hero));
@@ -50,6 +54,8 @@ public class HeroFactory {
         waterHeroInfo.setMaxHealth(200);
         waterHeroInfo.setMoveSpeed(3);
         waterHeroInfo.setTextureName("water_hero");
+        waterHeroInfo.setReloadTime(1000f);
+        waterHeroInfo.setRespawnTime(2000f);
 
         BulletInfo bulletInfo = new BulletInfo();
         bulletInfo.setWidth(16);

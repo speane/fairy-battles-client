@@ -11,6 +11,8 @@ public class HeroInfo {
     private Integer height;
     private Integer damage;
     private Integer maxHealth;
+    private Float reloadTime;
+    private Float respawnTime;
     private BulletInfo bulletInfo;
 
     public String getName() {
@@ -75,5 +77,21 @@ public class HeroInfo {
 
     public void setMaxHealth(Integer maxHealth) {
         this.maxHealth = maxHealth;
+    }
+
+    public Float getReloadTime() {
+        return reloadTime;
+    }
+
+    public void setReloadTime(Float reloadTime) {
+        this.reloadTime = reloadTime;
+    }
+
+    public Float getRespawnTime() {
+        return respawnTime;
+    }
+
+    public void setRespawnTime(Float respawnTime) {
+        this.respawnTime = respawnTime;
     }
 }

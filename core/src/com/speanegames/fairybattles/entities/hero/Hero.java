@@ -15,6 +15,12 @@ public class Hero extends GameEntity implements Shooting {
     private int maxHealth;
     private int currentHealth;
 
+    private float respawnTime;
+    private float timeAfterDeath;
+
+    private float reloadTime;
+    private float loadTime;
+
     private BulletFactory bulletFactory;
 
     private List<Bullet> bullets;
@@ -34,7 +40,58 @@ public class Hero extends GameEntity implements Shooting {
 
         bullets.add(bullet);
 
+        reload();
+
         return bullet;
+    }
+
+    public boolean isAlive() {
+        return currentHealth > 0;
+    }
+
+    public void kill() {
+        respawnTime = 0;
+    }
+
+    public boolean isRespawned() {
+        return timeAfterDeath >= respawnTime;
+    }
+
+    public float getRespawnTime() {
+        return respawnTime;
+    }
+
+    public void setRespawnTime(float respawnTime) {
+        this.respawnTime = respawnTime;
+    }
+
+    public float getTimeAfterDeath() {
+        return timeAfterDeath;
+    }
+
+    public void setTimeAfterDeath(float timeAfterDeath) {
+        this.timeAfterDeath = timeAfterDeath;
+    }
+
+    public void reload() {
+        this.loadTime = 0;
+    }
+
+    @Override
+    public boolean isLoaded() {
+        return loadTime >= reloadTime;
+    }
+
+    public void setLoadTime(float loadTime) {
+        this.loadTime = loadTime;
+    }
+
+    public float getLoadTime() {
+        return loadTime;
+    }
+
+    public void addLoadTime(float delta) {
+        loadTime += delta;
     }
 
     public BulletFactory getBulletFactory() {
@@ -84,4 +141,13 @@ public class Hero extends GameEntity implements Shooting {
     public void setCurrentHealth(int currentHealth) {
         this.currentHealth = currentHealth;
     }
+
+    public float getReloadTime() {
+        return reloadTime;
+    }
+
+    public void setReloadTime(float reloadTime) {
+        this.reloadTime = reloadTime;
+    }
+
 }

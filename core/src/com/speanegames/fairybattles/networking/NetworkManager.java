@@ -7,6 +7,12 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.speanegames.fairybattles.FairyBattlesGame;
 import com.speanegames.fairybattles.config.NetworkConfig;
+import com.speanegames.fairybattles.networking.transfers.battle.finish.BattleFinishedEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.hit.HitFortressEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.hit.HitHeroEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.kill.DestroyFortressEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.kill.KillHeroEvent;
+import com.speanegames.fairybattles.networking.transfers.battle.kill.RespawnHeroEvent;
 import com.speanegames.fairybattles.networking.transfers.battle.move.HeroMoveRequest;
 import com.speanegames.fairybattles.networking.transfers.battle.move.HeroMovedEvent;
 import com.speanegames.fairybattles.networking.transfers.battle.shoot.HeroShootEvent;
@@ -158,6 +164,59 @@ public class NetworkManager {
         client.sendUDP(request);
     }
 
+    public void hitHeroEventRequest(String shootTeam, int shooterPosition, int targetPosition) {
+        HitHeroEvent event = new HitHeroEvent();
+
+        event.shooterTeam = shootTeam;
+        event.shooterPosition = shooterPosition;
+        event.targetPosition = targetPosition;
+
+        client.sendTCP(event);
+    }
+
+    public void hitFortressEventRequest(String shooterTeam, int shooterPosition) {
+        HitFortressEvent event = new HitFortressEvent();
+
+        event.team = shooterTeam;
+        event.position = shooterPosition;
+
+        client.sendTCP(event);
+    }
+
+    public void killHero(String killerTeam, int killerPosition, String targetTeam, int targetPosition) {
+        KillHeroEvent event = new KillHeroEvent();
+
+        event.killerTeam = killerTeam;
+        event.killerPosition = killerPosition;
+        event.targetTeam = targetTeam;
+        event.targetPosition = targetPosition;
+
+        client.sendTCP(event);
+    }
+
+    public void respawn(String team, int position) {
+        RespawnHeroEvent event = new RespawnHeroEvent();
+
+        event.team = team;
+        event.position = position;
+
+        client.sendTCP(event);
+    }
+
+    public void destroyFortress(String team) {
+        DestroyFortressEvent event = new DestroyFortressEvent();
+
+        event.team = team;
+
+        client.sendTCP(event);
+    }
+
+    public void finishBattle() {
+        BattleFinishedEvent event = new BattleFinishedEvent();
+
+        client.sendTCP(event);
+    }
+
     private void registerClasses() {
         Kryo kryo = client.getKryo();
 
@@ -184,6 +243,12 @@ public class NetworkManager {
         kryo.register(HeroMovedEvent.class);
         kryo.register(HeroShootRequest.class);
         kryo.register(HeroShootEvent.class);
+        kryo.register(HitHeroEvent.class);
+        kryo.register(HitFortressEvent.class);
+        kryo.register(KillHeroEvent.class);
+        kryo.register(RespawnHeroEvent.class);
+        kryo.register(DestroyFortressEvent.class);
+        kryo.register(BattleFinishedEvent.class);
     }
 
     private void initListener() {
@@ -217,6 +282,18 @@ public class NetworkManager {
                     handleHeroMovedEvent((HeroMovedEvent) object);
                 } else if (object instanceof HeroShootEvent) {
                     handleHeroShootEvent((HeroShootEvent) object);
+                } else if (object instanceof HitHeroEvent) {
+                    handleHitHeroEvent((HitHeroEvent) object);
+                } else if (object instanceof HitFortressEvent) {
+                    handleHitFortressEvent((HitFortressEvent) object);
+                } else if (object instanceof KillHeroEvent) {
+
+                } else if (object instanceof RespawnHeroEvent) {
+
+                } else if (object instanceof DestroyFortressEvent) {
+
+                } else if (object instanceof BattleFinishedEvent) {
+
                 }
             }
         };
@@ -326,5 +403,13 @@ public class NetworkManager {
 
     private void handleHeroShootEvent(HeroShootEvent event) {
         game.heroShoot(event.team, event.position, event.x, event.y, event.rotation);
+    }
+
+    private void handleHitHeroEvent(HitHeroEvent event) {
+        game.hitHero(event.shooterTeam, event.shooterPosition, event.targetPosition);
+    }
+
+    private void handleHitFortressEvent(HitFortressEvent event) {
+        game.hitFortress(event.team, event.position);
     }
 }

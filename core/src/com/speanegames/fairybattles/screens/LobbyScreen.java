@@ -283,4 +283,8 @@ public class LobbyScreen extends ScreenAdapter {
     public void setSunPlayers(Player[] sunPlayers) {
         this.sunPlayers = sunPlayers;
     }
+
+    public boolean isLobbyOwner() {
+        return isOwner;
+    }
 }
