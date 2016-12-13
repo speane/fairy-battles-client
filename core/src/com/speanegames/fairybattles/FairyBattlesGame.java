@@ -22,6 +22,7 @@ public class FairyBattlesGame extends Game {
 	private LobbyScreen lobbyScreen;
     private MainMenuScreen mainMenuScreen;
     private BattleFieldScreen battleFieldScreen;
+    private BattleFinishedScreen battleFinishedScreen;
 
     private Player player;
 
@@ -192,10 +193,22 @@ public class FairyBattlesGame extends Game {
     }
 
     public void destroyFortress(String team) {
-
+        battleFieldScreen.destroyFortress(team);
     }
 
     public void finishBattle() {
+        BattleFinishedScreen battleFinishedScreen = new BattleFinishedScreen(
+                this,
+                battleFieldScreen.getSunTeamScores(),
+                battleFieldScreen.getMoonTeamScores(),
+                battleFieldScreen.getTeam(),
+                battleFieldScreen.getPosition()
+        );
+        this.battleFinishedScreen = battleFinishedScreen;
+        setScreen(battleFinishedScreen);
+    }
 
+    public void backToLobbyScreen() {
+        setScreen(lobbyScreen);
     }
 }

@@ -31,6 +31,7 @@ import com.speanegames.fairybattles.entities.hero.Hero;
 import com.speanegames.fairybattles.entities.hero.HeroFactory;
 import com.speanegames.fairybattles.entities.moving.Direction;
 import com.speanegames.fairybattles.entities.player.Player;
+import com.speanegames.fairybattles.entities.score.PlayerScore;
 import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.RendererImpl;
 import com.speanegames.fairybattles.rendering.TextureManager;
@@ -45,10 +46,15 @@ public class BattleFieldScreen extends ScreenAdapter {
     private Player[] sunTeam;
     private Player[] moonTeam;
 
+    private PlayerScore playerScore;
+    private PlayerScore[] sunTeamScores;
+    private PlayerScore[] moonTeamScores;
+
     private Hero[] sunHeroes;
     private Hero[] moonHeroes;
 
     private boolean isEnd;
+    private String victoryTeam;
     private boolean isVictory;
 
     private Label healthBarLabel;
@@ -127,6 +133,7 @@ public class BattleFieldScreen extends ScreenAdapter {
         shapeRenderer = new ShapeRenderer();
 
         initEntities();
+        initScores();
         initCamera();
         initUI();
         initInputProcessor();
@@ -203,16 +210,21 @@ public class BattleFieldScreen extends ScreenAdapter {
     }
 
     public void hitFortress(String shooterTeam, int shooterPosition) {
-        Hero shooter;
-        Fortress target;
         if (shooterTeam.equals("SUN")) {
-            shooter = sunHeroes[shooterPosition];
-            target = moonFortress;
+            Hero shooter = sunHeroes[shooterPosition];
+            Fortress target = moonFortress;
+            target.setCurrentHealth(target.getCurrentHealth() - shooter.getDamage());
+            if (target.getCurrentHealth() <= 0) {
+                networkManager.destroyFortress("MOON");
+            }
         } else {
-            shooter = moonHeroes[shooterPosition];
-            target = sunFortress;
+            Hero shooter = moonHeroes[shooterPosition];
+            Fortress target = sunFortress;
+            target.setCurrentHealth(target.getCurrentHealth() - shooter.getDamage());
+            if (target.getCurrentHealth() <= 0) {
+                networkManager.destroyFortress("SUN");
+            }
         }
-        target.setCurrentHealth(target.getCurrentHealth() - shooter.getDamage());
     }
 
     public void killHero(String killerTeam, int killerPosition, String targetTeam, int targetPosition) {
@@ -247,6 +259,55 @@ public class BattleFieldScreen extends ScreenAdapter {
         respawnedHero.setKilled(false);
         respawnedHero.setTimeAfterDeath(respawnedHero.getRespawnTime());
         respawnedHero.setCurrentHealth(respawnedHero.getMaxHealth());
+    }
+
+    public void destroyFortress(String destroyedFortressTeam) {
+        isVictory = !team.equals(destroyedFortressTeam);
+        if (isHost) {
+            this.networkManager.finishBattle();
+        }
+    }
+
+    public PlayerScore[] getSunTeamScores() {
+        return sunTeamScores;
+    }
+
+    public PlayerScore[] getMoonTeamScores() {
+        return moonTeamScores;
+    }
+
+    public PlayerScore getPlayerScore() {
+        return playerScore;
+    }
+
+    public String getTeam() {
+        return team;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    private void initScores() {
+        sunTeamScores = new PlayerScore[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
+        moonTeamScores = new PlayerScore[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
+        for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
+            if (sunTeam[i] != null) {
+                sunTeamScores[i] = new PlayerScore();
+                sunTeamScores[i].setPlayer(sunTeam[i]);
+            }
+
+            if (moonTeam[i] != null) {
+                moonTeamScores[i] = new PlayerScore();
+                moonTeamScores[i].setPlayer(moonTeam[i]);
+            }
+        }
+
+        if (team.equals("SUN")) {
+            playerScore = sunTeamScores[position];
+        } else {
+            playerScore = moonTeamScores[position];
+        }
     }
 
     private void initUI() {

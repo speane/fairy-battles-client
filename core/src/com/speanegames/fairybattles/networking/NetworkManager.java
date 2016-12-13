@@ -175,6 +175,7 @@ public class NetworkManager {
     }
 
     public void hitFortressEventRequest(String shooterTeam, int shooterPosition) {
+        Gdx.app.log("HIT FORTRESS EVENT REQ", "team: " + shooterTeam + " position: " + shooterPosition);
         HitFortressEvent event = new HitFortressEvent();
 
         event.team = shooterTeam;

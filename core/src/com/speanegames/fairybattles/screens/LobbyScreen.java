@@ -61,6 +61,9 @@ public class LobbyScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage);
         initBackground();
         initUI();
+        if (team != null) {
+            joinTeam(team, position);
+        }
     }
 
     @Override
@@ -87,10 +90,20 @@ public class LobbyScreen extends ScreenAdapter {
         this.position = position;
         if (team.equals("SUN")) {
             sunPlayers[position] = player;
+            for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
+                sunTeamLabels[i].setColor(Color.GREEN);
+                moonTeamLabels[i].setColor(Color.RED);
+            }
             sunTeamLabels[position].setText(player.getLogin());
+            sunTeamLabels[position].setColor(Color.BLUE);
         } else {
             moonPlayers[position] = player;
+            for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
+                moonTeamLabels[i].setColor(Color.GREEN);
+                sunTeamLabels[i].setColor(Color.RED);
+            }
             moonTeamLabels[position].setText(player.getLogin());
+            moonTeamLabels[position].setColor(Color.BLUE);
         }
     }
 
@@ -249,22 +262,60 @@ public class LobbyScreen extends ScreenAdapter {
         moonTeamLabels = new Label[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
         sunTeamLabels = new Label[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
 
+        Color sunTeamColor;
+        Color moonTeamColor;
+
+        if (team != null) {
+            if (team.equals("SUN")) {
+                sunTeamColor = Color.GREEN;
+                moonTeamColor = Color.RED;
+            } else {
+                sunTeamColor = Color.RED;
+                moonTeamColor = Color.GREEN;
+            }
+        } else {
+            sunTeamColor = moonTeamColor = Color.WHITE;
+        }
+
         for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
-            sunTeamLabels[i] = new Label("[EMPTY SLOT]", skin);
+
+            if (sunPlayers[i] != null) {
+                sunTeamLabels[i] = new Label(sunPlayers[i].getLogin(), skin);
+            } else {
+                sunTeamLabels[i] = new Label("[EMPTY SLOT", skin);
+            }
+
+            sunTeamLabels[i].setColor(sunTeamColor);
             sunTeamLabels[i].setPosition(
                     UIConfig.TEXT_FIELD_INDENT * 2,
                     AppConfig.SCREEN_HEIGHT / 2
                             - i * UIConfig.TEXT_FIELD_INDENT / 2,
                     Align.bottomLeft);
+
             stage.addActor(sunTeamLabels[i]);
 
-            moonTeamLabels[i] = new Label("[EMPTY SLOT]", skin);
+            if (moonPlayers[i] != null) {
+                moonTeamLabels[i] = new Label(moonPlayers[i].getLogin(), skin);
+            } else {
+                moonTeamLabels[i] = new Label("[EMPTY SLOT]", skin);
+            }
+
+            moonTeamLabels[i].setColor(moonTeamColor);
             moonTeamLabels[i].setPosition(
                     AppConfig.SCREEN_WIDTH / 2 + UIConfig.TEXT_FIELD_INDENT * 6,
                     AppConfig.SCREEN_HEIGHT / 2
                             - i * UIConfig.TEXT_FIELD_INDENT / 2,
                     Align.bottomLeft);
+
             stage.addActor(moonTeamLabels[i]);
+        }
+
+        if (team != null) {
+            if (team.equals("SUN")) {
+                sunTeamLabels[position].setColor(Color.BLUE);
+            } else {
+                moonTeamLabels[position].setColor(Color.BLUE);
+            }
         }
     }
 
