@@ -208,8 +208,10 @@ public class BattleFinishedScreen extends ScreenAdapter {
 
         if (team.equals("SUN")) {
             sunTeamLoginLabels[position].setColor(Color.BLUE);
+            sunTeamScoreLabels[position].setColor(Color.BLUE);
         } else {
             moonTeamLoginLabels[position].setColor(Color.BLUE);
+            moonTeamScoreLabels[position].setColor(Color.BLUE);
         }
     }
 }

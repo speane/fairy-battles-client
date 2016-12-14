@@ -211,4 +211,16 @@ public class FairyBattlesGame extends Game {
     public void backToLobbyScreen() {
         setScreen(lobbyScreen);
     }
+
+    public void signOut() {
+        networkManager.signOutRequest();
+        SignInScreen signInScreen = new SignInScreen(this);
+        this.signInScreen = signInScreen;
+        this.player = null;
+        setScreen(signInScreen);
+    }
+
+    public void quit() {
+        Gdx.app.exit();
+    }
 }

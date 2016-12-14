@@ -89,6 +89,7 @@ public class ConnectToLobbyScreen extends ScreenAdapter {
         initConnectToLobbyButton();
         initBackButton();
         initStatusLabel();
+        initLoginLabel();
     }
 
     private void initTitleLabel() {
@@ -124,6 +125,16 @@ public class ConnectToLobbyScreen extends ScreenAdapter {
         });
 
         stage.addActor(connectToLobbyButton);
+    }
+
+    private void initLoginLabel() {
+        Label loginLabel = new Label("Player: " + game.getPlayer().getLogin(), skin);
+        loginLabel.setPosition(
+                UIConfig.TEXT_FIELD_INDENT / 2,
+                AppConfig.SCREEN_HEIGHT - UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft
+        );
+        loginLabel.setColor(Color.SCARLET);
+        stage.addActor(loginLabel);
     }
 
     private void initBackButton() {

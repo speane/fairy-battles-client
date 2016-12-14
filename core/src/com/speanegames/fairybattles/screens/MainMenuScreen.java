@@ -72,8 +72,11 @@ public class MainMenuScreen extends ScreenAdapter {
     private void initUI() {
         initTitle();
         initStatusLabel();
+        initLoginLabel();
         initConnectToLobbyButton();
         initCreateLobbyButton();
+        initSignOutButton();
+        initQuitButton();
     }
 
     private void initTitle() {
@@ -93,6 +96,16 @@ public class MainMenuScreen extends ScreenAdapter {
         stage.addActor(statusLabel);
     }
 
+    private void initLoginLabel() {
+        Label loginLabel = new Label("Player: " + game.getPlayer().getLogin(), skin);
+        loginLabel.setPosition(
+                UIConfig.TEXT_FIELD_INDENT / 2,
+                AppConfig.SCREEN_HEIGHT - UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft
+        );
+        loginLabel.setColor(Color.SCARLET);
+        stage.addActor(loginLabel);
+    }
+
     private void initBackground() {
         Image backgroundImage = new Image(textureManager.getTexture(AssetConfig.MENU_BACKGROUND_IMAGE_NAME));
         backgroundImage.setSize(AppConfig.SCREEN_WIDTH, AppConfig.SCREEN_HEIGHT);
@@ -105,7 +118,7 @@ public class MainMenuScreen extends ScreenAdapter {
 
         authorizeButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
         authorizeButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
-                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 2, Align.center);
+                AppConfig.SCREEN_HEIGHT / 2, Align.center);
 
         authorizeButton.addListener(new ActorGestureListener() {
             @Override
@@ -122,7 +135,7 @@ public class MainMenuScreen extends ScreenAdapter {
 
         authorizeButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
         authorizeButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
-                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 3, Align.center);
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT, Align.center);
 
         authorizeButton.addListener(new ActorGestureListener() {
             @Override
@@ -132,6 +145,40 @@ public class MainMenuScreen extends ScreenAdapter {
         });
 
         stage.addActor(authorizeButton);
+    }
+
+    private void initSignOutButton() {
+        TextButton signOutButton = new TextButton("Sign out", skin);
+
+        signOutButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        signOutButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 4, Align.center);
+
+        signOutButton.addListener(new ActorGestureListener() {
+            @Override
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                game.signOut();
+            }
+        });
+
+        stage.addActor(signOutButton);
+    }
+
+    private void initQuitButton() {
+        TextButton signOutButton = new TextButton("Quit", skin);
+
+        signOutButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        signOutButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 5, Align.center);
+
+        signOutButton.addListener(new ActorGestureListener() {
+            @Override
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                game.quit();
+            }
+        });
+
+        stage.addActor(signOutButton);
     }
 
     private void clearScreen() {

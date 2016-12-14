@@ -36,6 +36,7 @@ import com.speanegames.fairybattles.networking.transfers.signin.SignInRequest;
 import com.speanegames.fairybattles.networking.transfers.signin.SignInResponse;
 import com.speanegames.fairybattles.networking.transfers.signup.SignUpRequest;
 import com.speanegames.fairybattles.networking.transfers.signup.SignUpResponse;
+import com.speanegames.fairybattles.networking.transfers.signout.SignOutRequest;
 
 import java.io.IOException;
 
@@ -220,6 +221,15 @@ public class NetworkManager {
         client.sendTCP(event);
     }
 
+    public void leaveGame() {
+        leaveLobbyRequest();
+    }
+
+    public void signOutRequest() {
+        SignOutRequest request = new SignOutRequest();
+        client.sendTCP(request);
+    }
+
     private void registerClasses() {
         Kryo kryo = client.getKryo();
 
@@ -252,6 +262,7 @@ public class NetworkManager {
         kryo.register(RespawnHeroEvent.class);
         kryo.register(DestroyFortressEvent.class);
         kryo.register(BattleFinishedEvent.class);
+        kryo.register(SignOutRequest.class);
     }
 
     private void initListener() {

@@ -149,6 +149,7 @@ public class LobbyScreen extends ScreenAdapter {
         }
 
         initLobbyIdLabel();
+        initLoginLabel();
         initJoinSunTeamButton();
         initJoinMoonTeamButton();
         initTeamLabels();
@@ -161,6 +162,16 @@ public class LobbyScreen extends ScreenAdapter {
                 AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft);
         lobbyIdLabel.setColor(Color.RED);
         stage.addActor(lobbyIdLabel);
+    }
+
+    private void initLoginLabel() {
+        Label loginLabel = new Label("Player: " + game.getPlayer().getLogin(), skin);
+        loginLabel.setPosition(
+                UIConfig.TEXT_FIELD_INDENT / 2,
+                AppConfig.SCREEN_HEIGHT - UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft
+        );
+        loginLabel.setColor(Color.SCARLET);
+        stage.addActor(loginLabel);
     }
 
     private void initTitleLabel() {

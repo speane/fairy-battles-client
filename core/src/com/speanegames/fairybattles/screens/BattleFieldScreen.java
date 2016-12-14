@@ -146,26 +146,21 @@ public class BattleFieldScreen extends ScreenAdapter {
             updateBullets();
             checkCollisions();
             updateCamera();
+            updateUI();
             hero.setLoadTime(hero.getLoadTime() + delta * 1000);
-            /*System.out.println("alive: " + hero.isAlive() + " killed: " + hero.isKilled() + " time after death: " + hero.getTimeAfterDeath() +
-            " respawn time: " + hero.getRespawnTime() + " health: " + hero.getCurrentHealth() + " max hp: " + hero.getMaxHealth());*/
-
-            if (hero.isAlive()) {
+            if (hero.isAlive() && !isEnd) {
                 networkManager.moveHeroRequest(hero.getX(), hero.getY(), hero.getRotation());
             } else {
-
                 if (hero.isKilled()) {
                     hero.setTimeAfterDeath(hero.getTimeAfterDeath() + delta * 1000);
                     if (hero.isRespawned()) {
                         networkManager.respawn(team, position);
                     }
-                } else {
                 }
             }
         }
         draw();
         stage.act();
-        updateUI();
         stage.draw();
     }
 
@@ -217,6 +212,7 @@ public class BattleFieldScreen extends ScreenAdapter {
             if (target.getCurrentHealth() <= 0) {
                 networkManager.destroyFortress("MOON");
             }
+            sunTeamScores[shooterPosition].setScore(sunTeamScores[shooterPosition].getScore() + 30);
         } else {
             Hero shooter = moonHeroes[shooterPosition];
             Fortress target = sunFortress;
@@ -224,6 +220,7 @@ public class BattleFieldScreen extends ScreenAdapter {
             if (target.getCurrentHealth() <= 0) {
                 networkManager.destroyFortress("SUN");
             }
+            moonTeamScores[shooterPosition].setScore(moonTeamScores[shooterPosition].getScore() + 30);
         }
     }
 
@@ -236,9 +233,11 @@ public class BattleFieldScreen extends ScreenAdapter {
         if (killerTeam.equals("SUN")) {
             killer = sunHeroes[killerPosition];
             target = moonHeroes[targetPosition];
+            sunTeamScores[killerPosition].setScore(sunTeamScores[killerPosition].getScore() + 100);
         } else {
             killer = moonHeroes[killerPosition];
             target = sunHeroes[targetPosition];
+            moonTeamScores[killerPosition].setScore(moonTeamScores[killerPosition].getScore() + 100);
         }
 
         target.kill();
@@ -328,12 +327,11 @@ public class BattleFieldScreen extends ScreenAdapter {
         shootLoadBarLabel = new Label("Shoot: ", skin);
         shootLoadBarLabel.setColor(Color.SCARLET);
         stage.addActor(shootLoadBarLabel);
-        updateUI();
     }
 
     private void updateUI() {
-        float leftBottomCornerX = (camera.position.x - AppConfig.SCREEN_WIDTH / 2.f);
-        float leftBottomCornerY = (camera.position.y - AppConfig.SCREEN_HEIGHT / 2.f);
+        float leftBottomCornerX = (camera.position.x - AppConfig.SCREEN_WIDTH / 2);
+        float leftBottomCornerY = (camera.position.y - AppConfig.SCREEN_HEIGHT / 2);
         healthBarLabel.setPosition(
                 leftBottomCornerX + BattleFieldUIConfig.HEALTH_BAR_LABEL_LEFT_INDENT,
                 leftBottomCornerY + BattleFieldUIConfig.HEALTH_BAR_LABEL_BOTTOM_INDENT);
@@ -419,6 +417,7 @@ public class BattleFieldScreen extends ScreenAdapter {
     }
 
     private void draw() {
+
         clearScreen();
         batch.setProjectionMatrix(camera.projection);
         batch.setTransformMatrix(camera.view);
@@ -609,6 +608,8 @@ public class BattleFieldScreen extends ScreenAdapter {
             boolean sKeyPressed = Gdx.input.isKeyPressed(Input.Keys.S);
             boolean dKeyPressed = Gdx.input.isKeyPressed(Input.Keys.D);
 
+            boolean escapePressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+
             Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(mouseVector);
 
@@ -656,6 +657,12 @@ public class BattleFieldScreen extends ScreenAdapter {
 
                     hero.setPosition(oldX, oldY);
                 }
+            }
+
+            if (escapePressed) {
+                isEnd = true;
+
+                networkManager.leaveGame();
             }
         }
 
@@ -721,8 +728,6 @@ public class BattleFieldScreen extends ScreenAdapter {
                             networkManager.hitFortressEventRequest("SUN", i);
                         }
 
-                    /*int enemyFortressNewHealth = enemyFortress.getCurrentHealth() - bullet.getHero().getDamage();
-                    enemyFortress.setCurrentHealth(enemyFortressNewHealth > 0 ? enemyFortressNewHealth : 0);*/
                         bulletIterator.remove();
                     } else {
                         for (int j = 0; j < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; j++) {
@@ -763,8 +768,6 @@ public class BattleFieldScreen extends ScreenAdapter {
                             networkManager.hitFortressEventRequest("MOON", i);
                         }
 
-                    /*int enemyFortressNewHealth = enemyFortress.getCurrentHealth() - bullet.getHero().getDamage();
-                    enemyFortress.setCurrentHealth(enemyFortressNewHealth > 0 ? enemyFortressNewHealth : 0);*/
                         bulletIterator.remove();
                     } else {
                         for (int j = 0; j < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; j++) {
