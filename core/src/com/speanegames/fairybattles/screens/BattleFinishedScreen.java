@@ -106,9 +106,7 @@ public class BattleFinishedScreen extends ScreenAdapter {
     }
 
     private void initTitleLabel() {
-        // TODO draw label
-
-        Image labelImage = new Image(textureManager.getTexture("battle_lobby_label"));
+        Image labelImage = new Image(textureManager.getTexture(game.isWinner() ? "victory_label" : "defeat_label"));
         labelImage.setPosition(AppConfig.SCREEN_WIDTH / 2 - UIConfig.TITLE_LABEL_WIDTH / 2.3F,
                 AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TITLE_LABEL_HEIGHT / 3F, Align.bottomLeft);
         labelImage.setSize(UIConfig.TITLE_LABEL_WIDTH, UIConfig.TITLE_LABEL_HEIGHT);

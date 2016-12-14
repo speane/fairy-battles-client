@@ -17,7 +17,7 @@ import com.speanegames.fairybattles.config.UIConfig;
 import com.speanegames.fairybattles.networking.NetworkManager;
 import com.speanegames.fairybattles.rendering.TextureManager;
 
-public class SignInScreen extends ScreenAdapter {
+public class SignUpScreen extends ScreenAdapter {
 
     private TextureManager textureManager;
     private NetworkManager networkManager;
@@ -27,11 +27,13 @@ public class SignInScreen extends ScreenAdapter {
 
     private TextField loginTextField;
     private TextField passwordTextField;
+    private TextField passwordConfirmField;
+
     private Label statusLabel;
 
     private FairyBattlesGame game;
 
-    public SignInScreen(FairyBattlesGame game) {
+    public SignUpScreen(FairyBattlesGame game) {
         this.game = game;
         networkManager = game.getNetworkManager();
         textureManager = game.getTextureManager();
@@ -75,7 +77,7 @@ public class SignInScreen extends ScreenAdapter {
     }
 
     private void initTitleLabel() {
-        Image labelImage = new Image(textureManager.getTexture("sign_in_label"));
+        Image labelImage = new Image(textureManager.getTexture("sign_up_label"));
         labelImage.setPosition(AppConfig.SCREEN_WIDTH / 2 - UIConfig.TITLE_LABEL_WIDTH / 2.3F,
                 AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TITLE_LABEL_HEIGHT / 3F, Align.bottomLeft);
         labelImage.setSize(UIConfig.TITLE_LABEL_WIDTH, UIConfig.TITLE_LABEL_HEIGHT);
@@ -97,8 +99,9 @@ public class SignInScreen extends ScreenAdapter {
         initTitleLabel();
         addLoginInputField();
         addPasswordInputField();
-        addAuthorizeButton();
+        initPasswordConfirmInputField();
         initSignUpButton();
+        initSignInButton();
         initQuitButton();
         initStatusLabel();
     }
@@ -142,21 +145,16 @@ public class SignInScreen extends ScreenAdapter {
         stage.addActor(passwordTextField);
     }
 
-    private void addAuthorizeButton() {
-        TextButton authorizeButton = new TextButton("Sign in", skin);
+    private void initPasswordConfirmInputField() {
+        passwordConfirmField = new TextField("", skin);
 
-        authorizeButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
-        authorizeButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
-                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 2, Align.center);
+        passwordConfirmField.setMessageText("Confirm password");
+        passwordConfirmField.setPasswordMode(true);
+        passwordConfirmField.setPasswordCharacter('*');
+        passwordConfirmField.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        passwordConfirmField.setPosition(AppConfig.SCREEN_WIDTH / 2, AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT, Align.center);
 
-        authorizeButton.addListener(new ActorGestureListener() {
-            @Override
-            public void tap(InputEvent event, float x, float y, int count, int button) {
-                networkManager.signInRequest(loginTextField.getText(), passwordTextField.getText());
-            }
-        });
-
-        stage.addActor(authorizeButton);
+        stage.addActor(passwordConfirmField);
     }
 
     private void initSignUpButton() {
@@ -169,14 +167,52 @@ public class SignInScreen extends ScreenAdapter {
         signUpButton.addListener(new ActorGestureListener() {
             @Override
             public void tap(InputEvent event, float x, float y, int count, int button) {
-                game.showSignUpScreen();
+                String error = validateFields();
+                if (error != null) {
+                    statusLabel.setText(error);
+                } else {
+                    networkManager.signUpRequst(loginTextField.getText(), passwordTextField.getText());
+                }
             }
         });
 
         stage.addActor(signUpButton);
     }
 
-    public void setSignInErrorMessage(String message) {
+    private String validateFields() {
+        String login = loginTextField.getText();
+        String password = passwordTextField.getText();
+        String passwordConfirm = passwordConfirmField.getText();
+
+        if (login.isEmpty()) {
+            return "Login is empty";
+        } else if (password.isEmpty()) {
+            return "Password is empty";
+        } else if (!password.equals(passwordConfirm)) {
+            return "Passwords are not the same";
+        } else {
+            return null;
+        }
+    }
+
+    private void initSignInButton() {
+        TextButton signInButton = new TextButton("Sign in", skin);
+
+        signInButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
+        signInButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 4, Align.center);
+
+        signInButton.addListener(new ActorGestureListener() {
+            @Override
+            public void tap(InputEvent event, float x, float y, int count, int button) {
+                game.showSignInScreen();
+            }
+        });
+
+        stage.addActor(signInButton);
+    }
+
+    public void setSignUpErrorMessage(String message) {
         statusLabel.setText(message);
     }
 }

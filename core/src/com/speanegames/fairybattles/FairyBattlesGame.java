@@ -23,6 +23,7 @@ public class FairyBattlesGame extends Game {
     private MainMenuScreen mainMenuScreen;
     private BattleFieldScreen battleFieldScreen;
     private BattleFinishedScreen battleFinishedScreen;
+    private SignUpScreen signUpScreen;
 
     private Player player;
 
@@ -220,7 +221,25 @@ public class FairyBattlesGame extends Game {
         setScreen(signInScreen);
     }
 
+    public void showSignUpScreen() {
+        SignUpScreen signUpScreen = new SignUpScreen(this);
+        this.signUpScreen = signUpScreen;
+        setScreen(signUpScreen);
+    }
+
     public void quit() {
         Gdx.app.exit();
+    }
+
+    public boolean isWinner() {
+        return battleFieldScreen.isWinner();
+    }
+
+    public void signUp() {
+        showSignInScreen();
+    }
+
+    public void setSignUpError(String message) {
+        signUpScreen.setSignUpErrorMessage(message);
     }
 }

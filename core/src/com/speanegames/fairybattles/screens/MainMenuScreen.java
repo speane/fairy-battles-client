@@ -102,7 +102,7 @@ public class MainMenuScreen extends ScreenAdapter {
                 UIConfig.TEXT_FIELD_INDENT / 2,
                 AppConfig.SCREEN_HEIGHT - UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft
         );
-        loginLabel.setColor(Color.SCARLET);
+        loginLabel.setColor(Color.WHITE);
         stage.addActor(loginLabel);
     }
 
@@ -169,7 +169,7 @@ public class MainMenuScreen extends ScreenAdapter {
 
         signOutButton.setSize(UIConfig.TEXT_FIELD_WIDTH, UIConfig.TEXT_FIELD_HEIGHT);
         signOutButton.setPosition(AppConfig.SCREEN_WIDTH / 2,
-                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 5, Align.center);
+                AppConfig.SCREEN_HEIGHT / 2 - UIConfig.TEXT_FIELD_INDENT * 6, Align.center);
 
         signOutButton.addListener(new ActorGestureListener() {
             @Override

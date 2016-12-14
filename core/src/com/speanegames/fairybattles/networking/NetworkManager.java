@@ -225,6 +225,18 @@ public class NetworkManager {
         leaveLobbyRequest();
     }
 
+    public void signUpRequst(String login, String password) {
+        if (!game.isWaitingResponse()) {
+            SignUpRequest request = new SignUpRequest();
+            request.login = login;
+            request.password = password;
+
+            game.setWaitingResponse(true);
+
+            client.sendTCP(request);
+        }
+    }
+
     public void signOutRequest() {
         SignOutRequest request = new SignOutRequest();
         client.sendTCP(request);
@@ -308,6 +320,8 @@ public class NetworkManager {
                     handleDestroyFortressEvent((DestroyFortressEvent) object);
                 } else if (object instanceof BattleFinishedEvent) {
                     handleBattleFinishedEvent((BattleFinishedEvent) object);
+                } else if (object instanceof SignUpResponse) {
+                    handleSignUpResponse((SignUpResponse) object);
                 }
             }
         };
@@ -441,6 +455,16 @@ public class NetworkManager {
 
     private void handleBattleFinishedEvent(BattleFinishedEvent event) {
         game.finishBattle();
+    }
+
+    private void handleSignUpResponse(SignUpResponse response) {
+        if (response.success) {
+            game.signUp();
+        } else {
+            game.setSignUpError(response.errorMessage);
+        }
+
+        game.setWaitingResponse(false);
     }
 
 }

@@ -160,7 +160,7 @@ public class LobbyScreen extends ScreenAdapter {
         lobbyIdLabel.setPosition(
                 AppConfig.SCREEN_WIDTH / 2 - UIConfig.TEXT_FIELD_INDENT * 2,
                 AppConfig.SCREEN_HEIGHT / 2 + UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft);
-        lobbyIdLabel.setColor(Color.RED);
+        lobbyIdLabel.setColor(Color.WHITE);
         stage.addActor(lobbyIdLabel);
     }
 
@@ -170,7 +170,7 @@ public class LobbyScreen extends ScreenAdapter {
                 UIConfig.TEXT_FIELD_INDENT / 2,
                 AppConfig.SCREEN_HEIGHT - UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft
         );
-        loginLabel.setColor(Color.SCARLET);
+        loginLabel.setColor(Color.WHITE);
         stage.addActor(loginLabel);
     }
 

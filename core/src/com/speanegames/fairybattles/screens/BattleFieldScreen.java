@@ -267,6 +267,10 @@ public class BattleFieldScreen extends ScreenAdapter {
         }
     }
 
+    public boolean isWinner() {
+        return isVictory;
+    }
+
     public PlayerScore[] getSunTeamScores() {
         return sunTeamScores;
     }
@@ -731,7 +735,7 @@ public class BattleFieldScreen extends ScreenAdapter {
                         bulletIterator.remove();
                     } else {
                         for (int j = 0; j < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; j++) {
-                            if (moonHeroes[j] != null) {
+                            if ((moonHeroes[j] != null) && moonHeroes[j].isAlive()) {
                                 if (collisionDetector.isCollision(bullet, moonHeroes[j])) {
 
                                     if (isHost) {
@@ -771,7 +775,7 @@ public class BattleFieldScreen extends ScreenAdapter {
                         bulletIterator.remove();
                     } else {
                         for (int j = 0; j < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; j++) {
-                            if (sunHeroes[j] != null) {
+                            if ((sunHeroes[j] != null) && sunHeroes[j].isAlive()) {
                                 if (collisionDetector.isCollision(bullet, sunHeroes[j])) {
 
                                     if (isHost) {

@@ -133,7 +133,7 @@ public class ConnectToLobbyScreen extends ScreenAdapter {
                 UIConfig.TEXT_FIELD_INDENT / 2,
                 AppConfig.SCREEN_HEIGHT - UIConfig.TEXT_FIELD_INDENT * 2, Align.bottomLeft
         );
-        loginLabel.setColor(Color.SCARLET);
+        loginLabel.setColor(Color.WHITE);
         stage.addActor(loginLabel);
     }
 
