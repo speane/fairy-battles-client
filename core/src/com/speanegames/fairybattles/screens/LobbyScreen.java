@@ -293,7 +293,7 @@ public class LobbyScreen extends ScreenAdapter {
             if (sunPlayers[i] != null) {
                 sunTeamLabels[i] = new Label(sunPlayers[i].getLogin(), skin);
             } else {
-                sunTeamLabels[i] = new Label("[EMPTY SLOT", skin);
+                sunTeamLabels[i] = new Label("[EMPTY SLOT]", skin);
             }
 
             sunTeamLabels[i].setColor(sunTeamColor);

@@ -57,15 +57,37 @@ public class HeroFactory {
         waterHeroInfo.setReloadTime(1000f);
         waterHeroInfo.setRespawnTime(2000f);
 
-        BulletInfo bulletInfo = new BulletInfo();
-        bulletInfo.setWidth(16);
-        bulletInfo.setHeight(16);
-        bulletInfo.setMoveSpeed(5);
-        bulletInfo.setMaxDistance(300);
-        bulletInfo.setTextureName("water_hero_bullet");
+        BulletInfo waterBulletInfo = new BulletInfo();
+        waterBulletInfo.setWidth(16);
+        waterBulletInfo.setHeight(16);
+        waterBulletInfo.setMoveSpeed(5);
+        waterBulletInfo.setMaxDistance(300);
+        waterBulletInfo.setTextureName("water_hero_bullet");
 
-        waterHeroInfo.setBulletInfo(bulletInfo);
+        waterHeroInfo.setBulletInfo(waterBulletInfo);
 
         heroInfoMap.put(waterHeroInfo.getName(), waterHeroInfo);
+
+        HeroInfo fireHero = new HeroInfo();
+        fireHero.setName("FIRE");
+        fireHero.setWidth(64);
+        fireHero.setHeight(64);
+        fireHero.setDamage(100);
+        fireHero.setMaxHealth(200);
+        fireHero.setMoveSpeed(3);
+        fireHero.setTextureName("fire_hero");
+        fireHero.setReloadTime(1000f);
+        fireHero.setRespawnTime(2000f);
+
+        BulletInfo fireBulletInfo = new BulletInfo();
+        fireBulletInfo.setWidth(16);
+        fireBulletInfo.setHeight(16);
+        fireBulletInfo.setMoveSpeed(5);
+        fireBulletInfo.setMaxDistance(300);
+        fireBulletInfo.setTextureName("fire_hero_bullet");
+
+        fireHero.setBulletInfo(fireBulletInfo);
+
+        heroInfoMap.put(fireHero.getName(), fireHero);
     }
 }

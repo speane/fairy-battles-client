@@ -39,16 +39,30 @@ bottom_right_mountain
   orig: 64, 64
   offset: 0, 0
   index: -1
-grass
+fire_hero
   rotate: false
   xy: 888, 14
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-left_mountain
+fire_hero_bullet
+  rotate: false
+  xy: 442, 58
+  size: 16, 16
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+grass
   rotate: false
   xy: 954, 212
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+left_mountain
+  rotate: false
+  xy: 954, 146
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -69,7 +83,7 @@ moon_fortress
   index: -1
 right_mountain
   rotate: false
-  xy: 954, 146
+  xy: 954, 80
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -83,21 +97,21 @@ sun_fortress
   index: -1
 top_left_mountain
   rotate: false
-  xy: 954, 80
+  xy: 954, 14
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 top_mountain
   rotate: false
-  xy: 954, 14
+  xy: 244, 10
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 top_right_mountain
   rotate: false
-  xy: 244, 10
+  xy: 310, 10
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -111,14 +125,14 @@ wall
   index: -1
 water_hero
   rotate: false
-  xy: 310, 10
+  xy: 376, 10
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 water_hero_bullet
   rotate: false
-  xy: 36, 18
+  xy: 460, 58
   size: 16, 16
   orig: 16, 16
   offset: 0, 0

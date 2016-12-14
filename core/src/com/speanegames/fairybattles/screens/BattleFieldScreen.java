@@ -389,7 +389,7 @@ public class BattleFieldScreen extends ScreenAdapter {
         moonHeroes = new Hero[AppConfig.MAX_TEAM_PLAYERS_AMOUNT];
         for (int i = 0; i < AppConfig.MAX_TEAM_PLAYERS_AMOUNT; i++) {
             if (sunTeam[i] != null) {
-                sunHeroes[i] = heroFactory.createHero("WATER", mapWidth / 6 * (i + 2), 300, 0);
+                sunHeroes[i] = heroFactory.createHero("FIRE", mapWidth / 6 * (i + 2), 300, 0);
             }
 
             if (moonTeam[i] != null) {
